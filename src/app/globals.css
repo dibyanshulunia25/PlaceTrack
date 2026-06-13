@@ -1,26 +1,152 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-glass: var(--glass);
+  
+  --shadow-clay: var(--shadow-clay);
+  --shadow-clay-inset: var(--shadow-clay-inset);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme inline {
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+}
+
+:root {
+  /* Light Theme Palette - Apple Sleek */
+  --background: #F5F5F7; /* Apple's exact off-white */
+  --foreground: #1D1D1F; /* Apple's exact text dark */
+  --surface: #FFFFFF;
+  --card: #FFFFFF;
+  --accent: #F5F5F7;
+  --accent-foreground: #1D1D1F;
+
+  /* Glassmorphism */
+  --glass: rgba(255, 255, 255, 0.7);
+
+  /* Claymorphism */
+  --shadow-clay: 10px 10px 20px rgba(180, 190, 200, 0.4), -10px -10px 20px rgba(255, 255, 255, 0.9);
+  --shadow-clay-inset: inset 4px 4px 8px rgba(180, 190, 200, 0.2), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+
+  /* Shadcn Mapped */
+  --card-foreground: #1D1D1F;
+  --popover: #FFFFFF;
+  --popover-foreground: #1D1D1F;
+  --primary: #0071E3; /* Apple Blue Fallback */
+  --primary-foreground: #FFFFFF;
+  --secondary: #E8E8ED;
+  --secondary-foreground: #1D1D1F;
+  --muted: #E2E8F0;
+  --muted-foreground: #86868B;
+  --destructive: #FF3B30; /* Apple Red */
+  --destructive-foreground: #FFFFFF;
+  --border: #D2D2D7;
+  --input: #D2D2D7;
+  --ring: #0071E3;
+  --radius: 1.2rem; /* More rounded like Apple */
+}
+
+.dark {
+  /* Dark Theme Palette - Apple Sleek Dark */
+  --background: #000000; /* Apple pure black */
+  --foreground: #F5F5F7;
+  --surface: #1C1C1E; /* Apple dark gray */
+  --card: #1C1C1E;
+  --accent: #2C2C2E;
+  --accent-foreground: #F5F5F7;
+
+  /* Glassmorphism */
+  --glass: rgba(28, 28, 30, 0.6);
+
+  /* Claymorphism */
+  --shadow-clay: 10px 10px 20px rgba(0, 0, 0, 0.8), -10px -10px 20px rgba(44, 44, 46, 0.3);
+  --shadow-clay-inset: inset 4px 4px 8px rgba(0, 0, 0, 0.6), inset -4px -4px 8px rgba(44, 44, 46, 0.2);
+
+  /* Shadcn Mapped */
+  --card-foreground: #F5F5F7;
+  --popover: #1C1C1E;
+  --popover-foreground: #F5F5F7;
+  --primary: #0A84FF; /* Apple Dark Mode Blue Fallback */
+  --primary-foreground: #FFFFFF;
+  --secondary: #2C2C2E;
+  --secondary-foreground: #F5F5F7;
+  --muted: #2C2C2E;
+  --muted-foreground: #86868B;
+  --destructive: #FF453A; /* Apple Dark Red */
+  --destructive-foreground: #FFFFFF;
+  --border: #38383A;
+  --input: #38383A;
+  --ring: #0A84FF;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+    @apply outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply transition-colors duration-300;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Apple Marketing Style Gradient for Primary Backgrounds */
+  .bg-primary {
+    background: linear-gradient(135deg, #00C6FF 0%, #0072FF 50%, #4FACFE 100%) !important;
+    background-size: 200% 200% !important;
+    animation: gradient-shift 5s ease infinite;
+    color: white !important;
+    border: none !important;
+  }
+
+  .bg-primary:hover {
+    background: linear-gradient(135deg, #4FACFE 0%, #00C6FF 50%, #0072FF 100%) !important;
+    opacity: 0.95;
+  }
+
+  /* Sleek subtle text gradient class */
+  .text-gradient-apple {
+    background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

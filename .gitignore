@@ -44,3 +44,7 @@ next-env.d.ts
 
 AGENTS.md
 CLAUDE.md
+/src/generated/prisma
+
+# clerk configuration (can include secrets)
+/.clerk/
