@@ -24,22 +24,36 @@ export default async function ExperiencesRepository({
   const year = typeof params.year === 'string' ? parseInt(params.year) : undefined
   const difficulty = typeof params.difficulty === 'string' ? parseInt(params.difficulty) : undefined
 
+  // Helper to format query for Postgres FTS tsquery
+  const formatSearchQuery = (query: string) => {
+    return query.trim().split(/\s+/).join(' | ')
+  }
+
   const whereClause: any = {}
   
   if (search) {
+    const formattedSearch = formatSearchQuery(search)
     whereClause.OR = [
-      { title: { contains: search, mode: 'insensitive' } },
-      { content: { contains: search, mode: 'insensitive' } },
-      { tags: { has: search } }
+      { title: { search: formattedSearch } },
+      { content: { search: formattedSearch } },
+      { role: { search: formattedSearch } },
+      { company: { is: { name: { search: formattedSearch } } } },
+      { tags: { hasSome: search.split(/\s+/) } }
     ]
+    
+    // Also extract year if a 4-digit number is present
+    const yearMatch = search.match(/\b(20\d{2})\b/)
+    if (yearMatch) {
+      whereClause.OR.push({ year: parseInt(yearMatch[1]) })
+    }
   }
   
   if (company) {
-    whereClause.company = { name: { equals: company, mode: 'insensitive' } }
+    whereClause.company = { is: { name: { search: formatSearchQuery(company) } } }
   }
   
   if (role) {
-    whereClause.role = { equals: role, mode: 'insensitive' }
+    whereClause.role = { search: formatSearchQuery(role) }
   }
   
   if (year) {

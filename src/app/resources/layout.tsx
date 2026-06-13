@@ -15,7 +15,7 @@ export default function ResourcesLayout({ children }: { children: React.ReactNod
             <span className="font-bold hidden sm:inline-block border-l pl-4 border-border ml-2">Resource Discovery Engine</span>
           </div>
           <div className="flex items-center gap-4">
-            <UserButton afterSignOutUrl="/sign-in" />
+            <UserButton />
           </div>
         </div>
       </header>

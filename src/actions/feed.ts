@@ -18,13 +18,18 @@ export async function fetchFeedExperiences({
   role?: string,
   year?: string
 }) {
+  // Helper to format query for Postgres FTS tsquery
+  const formatSearchQuery = (query: string) => {
+    return query.trim().split(/\s+/).join(' | ')
+  }
+
   const where: any = {}
   
   if (company) {
-    where.company = { name: { contains: company, mode: 'insensitive' } }
+    where.company = { is: { name: { search: formatSearchQuery(company) } } }
   }
   if (role) {
-    where.role = { contains: role, mode: 'insensitive' }
+    where.role = { search: formatSearchQuery(role) }
   }
   if (year) {
     where.year = parseInt(year)

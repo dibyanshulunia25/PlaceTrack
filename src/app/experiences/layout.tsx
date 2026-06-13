@@ -15,7 +15,7 @@ export default function ExperiencesLayout({ children }: { children: React.ReactN
             <span className="font-bold hidden sm:inline-block border-l pl-4 border-border ml-2">Experience Repository</span>
           </div>
           <div className="flex items-center gap-4">
-            <UserButton afterSignOutUrl="/sign-in" />
+            <UserButton />
           </div>
         </div>
       </header>
