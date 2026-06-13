@@ -36,19 +36,24 @@ enum ReportStatus {
 
 // PlaceTrack User Model
 model User {
-  id            String    @id @default(cuid()) // Will store Clerk User ID
-  name          String?
-  email         String?   @unique
-  image         String?
-  role          Role      @default(USER)
-  banned        Boolean   @default(false)
-  lastActiveAt  DateTime  @default(now())
-  createdAt     DateTime  @default(now())
-  applications Application[]
-  experiences  Experience[]
-  votes        Vote[]
-  reports      Report[]
+  id               String             @id @default(cuid()) // Will store Clerk User ID
+  name             String?
+  email            String?            @unique
+  image            String?
+  role             Role               @default(USER)
+  banned           Boolean            @default(false)
+  lastActiveAt     DateTime           @default(now())
+  createdAt        DateTime           @default(now())
+  applications     Application[]
+  experiences      Experience[]
+  votes            Vote[]
+  reports          Report[]
+  mockQuestions    MockQuestion[]
+  bookmarks        Bookmark[]
+  practiceSessions PracticeSession[]
+  practiceProgress PracticeProgress[]
 }
+
 // PlaceTrack Core Models
 
 model Company {
@@ -60,26 +65,28 @@ model Company {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  applications Application[]
-  experiences  Experience[]
+  applications     Application[]
+  experiences      Experience[]
+  mockQuestions    MockQuestion[]
+  practiceSessions PracticeSession[]
 
   @@index([name])
 }
 
 model Application {
-  id        String            @id @default(cuid())
-  userId    String
-  companyId String
-  role      String
-  status    ApplicationStatus @default(APPLIED)
+  id             String            @id @default(cuid())
+  userId         String
+  companyId      String
+  role           String
+  status         ApplicationStatus @default(APPLIED)
   location       String?
   salary         String?
   appliedAt      DateTime          @default(now())
   assessmentDate DateTime?
   interviewDate  DateTime?
   remindersSent  String[]          @default([])
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -100,12 +107,12 @@ model Experience {
   rating             Int      @default(0) // 1 to 5 scale
   difficulty         Int      @default(0) // 1 to 5 scale
   year               Int      @default(2024)
-  offerStatus String? // Optional field, e.g., Offered, Rejected
-  isAnonymous Boolean  @default(false)
-  upvotes     Int      @default(0)
-  views       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  offerStatus        String? // Optional field, e.g., Offered, Rejected
+  isAnonymous        Boolean  @default(false)
+  upvotes            Int      @default(0)
+  views              Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   userId    String
   companyId String
@@ -153,17 +160,78 @@ model Report {
 }
 
 model ExternalResource {
-  id          String   @id @default(cuid())
-  title       String
-  summary     String?  @db.Text
-  url         String   @unique
-  source      String   // e.g., "YouTube", "Medium", "GeeksforGeeks"
-  company     String?  
-  role        String?
-  tags        String[] @default([])
-  fetchedAt   DateTime @default(now())
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  title     String
+  summary   String?  @db.Text
+  url       String   @unique
+  source    String // e.g., "YouTube", "Medium", "GeeksforGeeks"
+  company   String?
+  role      String?
+  tags      String[] @default([])
+  fetchedAt DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([source])
   @@index([company])
+}
+
+model MockQuestion {
+  id         String   @id @default(cuid())
+  role       String
+  category   String
+  question   String   @db.Text
+  answer     String   @db.Text
+  difficulty Int      @default(1)
+  tags       String[] @default([])
+  createdAt  DateTime @default(now())
+
+  companyId String
+  userId    String
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bookmarks Bookmark[]
+
+  @@index([companyId])
+  @@index([category])
+}
+
+model Bookmark {
+  id             String   @id @default(cuid())
+  userId         String
+  mockQuestionId String
+  createdAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mockQuestion MockQuestion @relation(fields: [mockQuestionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mockQuestionId])
+  @@index([userId])
+}
+
+model PracticeSession {
+  id          String    @id @default(cuid())
+  userId      String
+  companyId   String?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  score       Int       @default(0)
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
+
+model PracticeProgress {
+  id                 String   @id @default(cuid())
+  userId             String
+  category           String
+  progressPercentage Float    @default(0.0)
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
 }

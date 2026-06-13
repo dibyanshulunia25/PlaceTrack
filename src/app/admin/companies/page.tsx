@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { getCompanies, createCompany, updateCompany, deleteCompany } from "@/actions/admin"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, Building2, Edit2, Trash2, Plus } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default function AdminCompaniesPage() {
   const [companies, setCompanies] = useState<any[]>([])
@@ -140,8 +141,12 @@ export default function AdminCompaniesPage() {
                 ))}
                 {companies.length === 0 && !loading && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
-                      No companies found.
+                    <td colSpan={5} className="px-6 py-8">
+                      <EmptyState
+                        icon={Search}
+                        title="No companies found"
+                        description="Try adjusting your search query."
+                      />
                     </td>
                   </tr>
                 )}

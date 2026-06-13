@@ -2,15 +2,12 @@
 
 import { prisma } from "@/lib/prisma"
 import { auth } from "@clerk/nextjs/server"
+import { searchLimit } from "@/lib/ratelimit"
 
-export async function fetchFeedExperiences({
-  page = 1,
-  limit = 10,
-  sort = "recent", // recent, trending, helpful
-  company,
-  role,
-  year
-}: {
+import { SearchSchema } from "@/lib/validations"
+import { Logger } from "@/lib/logger"
+
+export async function fetchFeedExperiences(rawArgs: {
   page?: number,
   limit?: number,
   sort?: string,
@@ -18,9 +15,24 @@ export async function fetchFeedExperiences({
   role?: string,
   year?: string
 }) {
+  const validated = SearchSchema.safeParse(rawArgs)
+  if (!validated.success) throw new Error("Invalid search parameters")
+  const { page, limit, sort, company, role, year } = validated.data
+
   // Helper to format query for Postgres FTS tsquery
   const formatSearchQuery = (query: string) => {
     return query.trim().split(/\s+/).join(' | ')
+  }
+
+  const { userId } = await auth()
+  
+  // Rate Limit Search
+  // If user is not logged in, we use a generic fallback string "anonymous" 
+  // In a real app we might pass the IP from a component or headers, but Server Actions don't have direct access to IP natively in all Next.js versions without headers().
+  // We'll limit by userId or 'anonymous'
+  const { success } = await searchLimit.limit(userId || 'anonymous')
+  if (!success) {
+    throw new Error("Search rate limit exceeded. Please slow down your searches.")
   }
 
   const where: any = {}
@@ -49,19 +61,24 @@ export async function fetchFeedExperiences({
     ]
   }
 
-  const { userId } = await auth()
 
-  const experiences = await prisma.experience.findMany({
-    where,
-    include: {
-      company: true,
-      user: true,
-      ...(userId ? { votes: { where: { userId } } } : {}),
-    },
-    orderBy,
-    skip: (page - 1) * limit,
-    take: limit,
-  })
 
-  return experiences
+  try {
+    const experiences = await prisma.experience.findMany({
+      where,
+      include: {
+        company: true,
+        user: true,
+        ...(userId ? { votes: { where: { userId } } } : {}),
+      },
+      orderBy,
+      skip: (page - 1) * limit,
+      take: limit,
+    })
+
+    return experiences
+  } catch (error) {
+    Logger.error(error instanceof Error ? error : new Error(String(error)), { tag: "database", action: "fetchFeedExperiences" })
+    throw new Error("Failed to fetch experiences")
+  }
 }

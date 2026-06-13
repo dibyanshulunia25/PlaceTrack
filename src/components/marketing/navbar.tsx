@@ -16,6 +16,9 @@ export function Navbar() {
   const links = [
     { name: "Home", href: "/" },
     { name: "Experiences", href: "/experiences" },
+    { name: "Mock Interviews", href: "/mock-interviews" },
+    { name: "Companies", href: "/companies" },
+    { name: "Leaderboard", href: "/leaderboard" },
     { name: "Resources", href: "/resources" },
     { name: "About", href: "/about" },
   ]
@@ -87,7 +90,7 @@ export function Navbar() {
                     Dashboard
                   </Button>
                 </Link>
-                <UserButton afterSignOutUrl="/" />
+                <UserButton />
               </>
             )}
           </nav>

@@ -26,7 +26,6 @@ export function Topbar() {
       <div className="flex items-center space-x-4">
         <ThemeToggle />
         <UserButton 
-          afterSignOutUrl="/" 
           appearance={{
             elements: {
               avatarBox: "size-9 border border-border shadow-clay-sm"

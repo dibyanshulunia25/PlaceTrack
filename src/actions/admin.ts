@@ -113,23 +113,31 @@ export async function getCompanies(query: string = "") {
   })
 }
 
-export async function createCompany(data: { name: string, website?: string, industry?: string }) {
+import { CompanyAdminSchema } from "@/lib/validations"
+
+export async function createCompany(rawData: { name: string, website?: string, industry?: string }) {
   await verifyAdmin()
   
+  const validated = CompanyAdminSchema.safeParse(rawData)
+  if (!validated.success) throw new Error(validated.error.issues[0].message)
+  
   await prisma.company.create({
-    data
+    data: validated.data
   })
   
   revalidatePath("/admin/companies")
   return { success: true }
 }
 
-export async function updateCompany(id: string, data: { name: string, website?: string, industry?: string }) {
+export async function updateCompany(id: string, rawData: { name: string, website?: string, industry?: string }) {
   await verifyAdmin()
   
+  const validated = CompanyAdminSchema.safeParse(rawData)
+  if (!validated.success) throw new Error(validated.error.issues[0].message)
+
   await prisma.company.update({
     where: { id },
-    data
+    data: validated.data
   })
   
   revalidatePath("/admin/companies")

@@ -38,10 +38,8 @@ export function ApplicationCard({ application }: { application: any }) {
               </div>
             </div>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 -mt-2 flex-shrink-0">
-                  <MoreHorizontal className="size-4 text-muted-foreground" />
-                </Button>
+              <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 h-8 w-8 -mr-2 -mt-2 flex-shrink-0">
+                <MoreHorizontal className="size-4 text-muted-foreground" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setIsEditOpen(true)} className="cursor-pointer">

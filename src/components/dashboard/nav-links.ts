@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, Briefcase, Building2, Trophy, Compass, Globe } from 'lucide-react'
+import { LayoutDashboard, FileText, Briefcase, Building2, Trophy, Compass, Globe, BrainCircuit } from 'lucide-react'
 
 export const dashboardLinks = [
   {
@@ -15,6 +15,11 @@ export const dashboardLinks = [
     title: 'Experiences',
     href: '/dashboard/experiences',
     icon: Briefcase,
+  },
+  {
+    title: 'Mock Interviews',
+    href: '/mock-interviews',
+    icon: BrainCircuit,
   },
   {
     title: 'Companies',

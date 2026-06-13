@@ -4,54 +4,67 @@ import { prisma } from "@/lib/prisma"
 import { currentUser } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
 
+import { experienceSubmissionLimit } from "@/lib/ratelimit"
+
+import { ExperienceSchema } from "@/lib/validations"
+
 export async function createExperience(formData: FormData) {
   const user = await currentUser()
   if (!user) throw new Error("Unauthorized")
   const userId = user.id
 
-  const companyName = formData.get("company") as string
-  const role = formData.get("role") as string
-  const title = formData.get("title") as string
-  const content = formData.get("content") as string
-  const oaQuestions = formData.get("oaQuestions") as string
-  const interviewQuestions = formData.get("interviewQuestions") as string
-  const tips = formData.get("tips") as string
-  const tagsStr = formData.get("tags") as string
-  
-  const difficultyStr = formData.get("difficulty") as string
-  const yearStr = formData.get("year") as string
-  const isAnonymous = formData.get("isAnonymous") === "on"
-
-  if (!companyName || !role || !title || !content || !difficultyStr || !yearStr) {
-    throw new Error("Missing required fields")
+  const { success } = await experienceSubmissionLimit.limit(userId)
+  if (!success) {
+    throw new Error("Rate limit exceeded. Please wait before submitting another experience.")
   }
 
-  const difficulty = parseInt(difficultyStr, 10)
-  const year = parseInt(yearStr, 10)
-  const tags = tagsStr ? tagsStr.split(",").map(t => t.trim()).filter(Boolean) : []
+  // Parse and sanitize inputs using Zod
+  const rawData = {
+    companyName: formData.get("company"),
+    role: formData.get("role"),
+    title: formData.get("title"),
+    content: formData.get("content"),
+    oaQuestions: formData.get("oaQuestions") || undefined,
+    interviewQuestions: formData.get("interviewQuestions") || undefined,
+    tips: formData.get("tips") || undefined,
+    difficulty: formData.get("difficulty"),
+    year: formData.get("year"),
+    tags: formData.get("tags") || undefined,
+    isAnonymous: formData.get("isAnonymous") === "on",
+  }
+
+  const validatedData = ExperienceSchema.safeParse(rawData)
+
+  if (!validatedData.success) {
+    // Return first error message
+    throw new Error(validatedData.error.issues[0].message)
+  }
+
+  const data = validatedData.data
+  const tags = data.tags ? data.tags.split(",").map(t => t.trim()).filter(Boolean) : []
 
   let company = await prisma.company.findFirst({
-    where: { name: { equals: companyName, mode: 'insensitive' } }
+    where: { name: { equals: data.companyName, mode: 'insensitive' } }
   })
 
   if (!company) {
     company = await prisma.company.create({
-      data: { name: companyName }
+      data: { name: data.companyName }
     })
   }
 
   const experience = await prisma.experience.create({
     data: {
-      title,
-      role,
-      content,
-      oaQuestions,
-      interviewQuestions,
-      tips,
+      title: data.title,
+      role: data.role,
+      content: data.content,
+      oaQuestions: data.oaQuestions,
+      interviewQuestions: data.interviewQuestions,
+      tips: data.tips,
       tags,
-      difficulty,
-      year,
-      isAnonymous,
+      difficulty: data.difficulty,
+      year: data.year,
+      isAnonymous: data.isAnonymous,
       userId,
       companyId: company.id,
     }

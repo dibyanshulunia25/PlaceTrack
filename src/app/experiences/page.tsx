@@ -4,6 +4,8 @@ import { redirect } from "next/navigation"
 import { currentUser } from "@clerk/nextjs/server"
 import { ExperienceFilters } from "@/components/experiences/experience-filters"
 import { PaginationWrapper } from "@/components/experiences/pagination-wrapper"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Search } from "lucide-react"
 
 export default async function ExperiencesRepository({
   searchParams,
@@ -100,10 +102,11 @@ export default async function ExperiencesRepository({
         </div>
 
         {experiences.length === 0 ? (
-          <div className="p-12 text-center border border-dashed border-border/60 rounded-xl bg-white/30 dark:bg-white/5 backdrop-blur-md">
-            <h3 className="text-xl font-bold mb-2">No experiences found</h3>
-            <p className="text-muted-foreground">Try adjusting your filters to find what you're looking for.</p>
-          </div>
+          <EmptyState
+            icon={Search}
+            title="No experiences found"
+            description="Try adjusting your filters to find what you're looking for."
+          />
         ) : (
           <>
             <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">

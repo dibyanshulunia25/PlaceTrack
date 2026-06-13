@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { ApplicationCard } from "@/components/applications/application-card"
 import { NewApplicationButton } from "@/components/applications/new-application-button"
 import { FileText } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default async function ApplicationsPage() {
   const user = await currentUser()
@@ -34,13 +35,12 @@ export default async function ApplicationsPage() {
       </div>
 
       {applications.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 mt-8 text-center border border-dashed rounded-2xl bg-muted/30">
-          <FileText className="size-12 text-muted-foreground mb-4 opacity-50" />
-          <h3 className="text-xl font-bold mb-2">No applications found</h3>
-          <p className="text-muted-foreground max-w-sm mx-auto mb-6">
-            You haven't tracked any applications yet. Click the button above to add your first one!
-          </p>
-        </div>
+        <EmptyState 
+          icon={FileText}
+          title="No applications found"
+          description="You haven't tracked any applications yet. Click the button above to add your first one!"
+          action={<NewApplicationButton />}
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {applications.map((app) => (

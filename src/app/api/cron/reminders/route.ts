@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { EmailService } from "@/services/email"
 import { differenceInDays, startOfDay, format } from "date-fns"
+import { Logger } from "@/lib/logger"
 
 // Standard Vercel Cron Secret validation
 const CRON_SECRET = process.env.CRON_SECRET
@@ -108,7 +109,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: true, processed: results })
 
   } catch (error) {
-    console.error("Cron Reminder Error:", error)
+    Logger.error(error instanceof Error ? error : new Error(String(error)), { tag: "cron", job: "reminders" })
     return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
   }
 }

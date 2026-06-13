@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { getUsers, toggleUserBan } from "@/actions/admin"
 import { motion } from "framer-motion"
 import { Search, ShieldAlert, ShieldCheck } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([])
@@ -110,8 +111,12 @@ export default function AdminUsersPage() {
                 ))}
                 {users.length === 0 && !loading && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
-                      No users found.
+                    <td colSpan={5} className="px-6 py-8">
+                      <EmptyState
+                        icon={Search}
+                        title="No users found"
+                        description="Try adjusting your search query."
+                      />
                     </td>
                   </tr>
                 )}

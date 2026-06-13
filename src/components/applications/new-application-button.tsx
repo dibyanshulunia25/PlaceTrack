@@ -11,11 +11,9 @@ export function NewApplicationButton() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="size-4 mr-2" />
-          Add Application
-        </Button>
+      <DialogTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+        <Plus className="size-4 mr-2" />
+        Add Application
       </DialogTrigger>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader className="mb-4">

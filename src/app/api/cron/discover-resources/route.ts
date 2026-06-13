@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { ResourceDiscoveryService } from "@/services/resource-discovery"
+import { Logger } from "@/lib/logger"
 
 /**
  * Triggered by Vercel Cron Jobs (or similar scheduler)
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
       details: result
     })
   } catch (error: any) {
-    console.error("[CRON] Discovery Failed:", error)
+    Logger.error(error instanceof Error ? error : new Error(String(error)), { tag: "cron", job: "discover-resources" })
     return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
 }

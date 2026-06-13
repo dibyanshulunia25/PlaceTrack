@@ -5,7 +5,9 @@ import { currentUser } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
 import { ApplicationStatus } from "@prisma/client"
 
-export async function createApplication(data: {
+import { ApplicationSchema } from "@/lib/validations"
+
+export async function createApplication(rawData: {
   companyName: string
   role: string
   status: ApplicationStatus
@@ -18,14 +20,26 @@ export async function createApplication(data: {
   const user = await currentUser()
   if (!user) throw new Error("Unauthorized")
 
+  // Zod Validation & Sanitization
+  const validated = ApplicationSchema.safeParse({
+    company: rawData.companyName,
+    ...rawData
+  })
+
+  if (!validated.success) {
+    throw new Error(validated.error.issues[0].message)
+  }
+
+  const data = validated.data
+
   // Find or create company
-  let company = await prisma.company.findUnique({
-    where: { name: data.companyName },
+  let company = await prisma.company.findFirst({
+    where: { name: { equals: data.company, mode: 'insensitive' } },
   })
 
   if (!company) {
     company = await prisma.company.create({
-      data: { name: data.companyName },
+      data: { name: data.company },
     })
   }
 
@@ -50,7 +64,7 @@ export async function createApplication(data: {
 
 export async function updateApplication(
   id: string,
-  data: {
+  rawData: {
     companyName: string
     role: string
     status: ApplicationStatus
@@ -64,14 +78,26 @@ export async function updateApplication(
   const user = await currentUser()
   if (!user) throw new Error("Unauthorized")
 
+  // Zod Validation & Sanitization
+  const validated = ApplicationSchema.safeParse({
+    company: rawData.companyName,
+    ...rawData
+  })
+
+  if (!validated.success) {
+    throw new Error(validated.error.issues[0].message)
+  }
+
+  const data = validated.data
+
   // Find or create company
-  let company = await prisma.company.findUnique({
-    where: { name: data.companyName },
+  let company = await prisma.company.findFirst({
+    where: { name: { equals: data.company, mode: 'insensitive' } },
   })
 
   if (!company) {
     company = await prisma.company.create({
-      data: { name: data.companyName },
+      data: { name: data.company },
     })
   }
 

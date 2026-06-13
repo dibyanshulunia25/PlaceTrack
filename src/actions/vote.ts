@@ -5,11 +5,18 @@ import { auth } from "@clerk/nextjs/server"
 import { VoteType } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
+import { voteLimit } from "@/lib/ratelimit"
+
 export async function toggleVote(experienceId: string, value: VoteType) {
   const { userId } = await auth()
   
   if (!userId) {
     throw new Error("Unauthorized")
+  }
+
+  const { success } = await voteLimit.limit(userId)
+  if (!success) {
+    throw new Error("Rate limit exceeded. Please wait a moment before voting again.")
   }
 
   return await prisma.$transaction(async (tx) => {

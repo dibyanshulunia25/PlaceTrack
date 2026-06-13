@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { ExperienceCard } from '@/components/experiences/experience-card'
 import { NewExperienceButton } from '@/components/experiences/new-experience-button'
 import { BookOpen } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,16 +33,12 @@ export default async function ExperiencesPage() {
       </div>
 
       {experiences.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed border-border/60 rounded-xl bg-white/30 dark:bg-white/5 backdrop-blur-md">
-          <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 shadow-clay-inset">
-            <BookOpen className="size-8 text-primary" />
-          </div>
-          <h3 className="text-xl font-bold mb-2">No experiences documented yet</h3>
-          <p className="text-muted-foreground max-w-sm mb-6">
-            Be the first to share your interview experience and help others prepare!
-          </p>
-          <NewExperienceButton />
-        </div>
+        <EmptyState
+          icon={BookOpen}
+          title="No experiences documented yet"
+          description="Be the first to share your interview experience and help others prepare!"
+          action={<NewExperienceButton />}
+        />
       ) : (
         <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
           {experiences.map((experience) => (

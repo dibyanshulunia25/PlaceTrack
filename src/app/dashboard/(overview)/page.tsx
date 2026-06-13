@@ -6,6 +6,7 @@ import { UpcomingEvents } from '@/components/dashboard/feed/upcoming-events'
 import { TrendingCompanies } from '@/components/dashboard/feed/trending-companies'
 import { CommunityFeed } from '@/components/dashboard/feed/community-feed'
 import { fetchFeedExperiences } from '@/actions/feed'
+import { InterviewPreparationWidget } from '@/components/dashboard/feed/interview-preparation-widget'
 
 export default async function DashboardPage() {
   const user = await currentUser()
@@ -53,6 +54,7 @@ export default async function DashboardPage() {
 
         {/* Right Column: Personal & Trending Sidebar */}
         <div className="xl:col-span-1 space-y-6">
+          <InterviewPreparationWidget />
           <UpcomingEvents applications={applications} />
           
           <div className="space-y-3">
