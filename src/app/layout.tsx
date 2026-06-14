@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 };
 
 import { ClerkProvider } from '@clerk/nextjs'
+import { Analytics } from "@vercel/analytics/react"
 
 export default function RootLayout({
   children,
@@ -39,6 +40,7 @@ export default function RootLayout({
             <SmoothScrolling>
               {children}
             </SmoothScrolling>
+            <Analytics />
           </ThemeProvider>
         </body>
       </html>
