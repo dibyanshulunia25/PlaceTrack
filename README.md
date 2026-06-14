@@ -23,16 +23,6 @@ PlaceTrack is a modern, full-stack placement management and resource discovery p
 - **Email Service**: Nodemailer (via Gmail SMTP) & React Email
 - **Deployment**: Vercel
 
-## Documentation Directory
-
-For complete details on configuring, running, and deploying PlaceTrack, please refer to the guides in the `/docs` directory:
-
-1. [Setup Guide](./docs/setup_guide.md) - How to clone, install, and run the project locally.
-2. [Environment Guide](./docs/environment_guide.md) - Detailed breakdown of all required `.env` variables.
-3. [Architecture Guide](./docs/architecture_guide.md) - Deep dive into the folder structure, DB schema, auth flow, and reminder workflows.
-4. [Deployment Guide](./docs/deployment_guide.md) - Step-by-step instructions for pushing to production on Vercel.
-5. [API Documentation](./docs/api_documentation.md) - Overview of server actions and Next.js API/CRON routes.
-
 ## Quick Start
 
 1. Clone the repository.
