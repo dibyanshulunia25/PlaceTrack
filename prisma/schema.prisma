@@ -52,18 +52,23 @@ model User {
   bookmarks        Bookmark[]
   practiceSessions PracticeSession[]
   practiceProgress PracticeProgress[]
+  resourceCollections ResourceCollection[]
+  resourceBookmarks   ResourceBookmark[]
+  discoveryAnalytics  DiscoveryAnalytics?
 }
 
 // PlaceTrack Core Models
 
 model Company {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  website   String?
-  logo      String?
-  industry  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String   @unique
+  description  String?  @db.Text
+  website      String?
+  logo         String?
+  industry     String?
+  hiringStatus String?  @default("Hiring")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   applications     Application[]
   experiences      Experience[]
@@ -198,6 +203,8 @@ model ExternalResource {
   fetchedAt DateTime @default(now())
   createdAt DateTime @default(now())
 
+  bookmarks ResourceBookmark[]
+
   @@index([source])
   @@index([company])
 }
@@ -267,4 +274,45 @@ model PracticeProgress {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, category])
+}
+
+model ResourceCollection {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookmarks   ResourceBookmark[]
+
+  @@index([userId])
+}
+
+model ResourceBookmark {
+  id           String   @id @default(cuid())
+  userId       String
+  resourceId   String
+  collectionId String?
+  createdAt    DateTime @default(now())
+
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource   ExternalResource   @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  collection ResourceCollection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, resourceId])
+  @@index([userId])
+  @@index([collectionId])
+}
+
+model DiscoveryAnalytics {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  viewedIds   String[] @default([]) // Array of resource IDs
+  savedIds    String[] @default([]) // Array of resource IDs
+  exploredTags String[] @default([]) // Array of tags
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

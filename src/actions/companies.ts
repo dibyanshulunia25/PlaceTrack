@@ -104,6 +104,9 @@ export async function getCompanyProfile(companyName: string) {
       _count: {
         select: { experiences: true, applications: true }
       },
+      applications: {
+        select: { status: true }
+      },
       experiences: {
         include: {
           user: {
@@ -137,26 +140,30 @@ export async function getCompanyProfile(companyName: string) {
   // Aggregate Questions
   const oaQuestions: { role: string, content: string, year: number }[] = []
   const interviewQuestions: { role: string, content: string, year: number }[] = []
-  const hrQuestions: { role: string, content: string, year: number }[] = [] // Using tips as HR/Tips
 
   let totalQuestionsCount = 0
+  let assessmentReports = 0
+  let interviewReports = 0
 
-  // Tag extraction for Most Discussed Topics
   const tagCounts: Record<string, number> = {}
+  const oaQuestionCounts: Record<string, number> = {}
+  const interviewQuestionCounts: Record<string, number> = {}
 
   experiences.forEach(exp => {
+    if (exp.assessmentQuestions.length > 0 || exp.legacyOaQuestions) assessmentReports++
+    if (exp.interviewQuestions.length > 0 || exp.legacyInterviewQuestions) interviewReports++
+
     exp.assessmentQuestions.forEach(q => {
       oaQuestions.push({ role: exp.role, content: q.questionText, year: exp.year })
+      oaQuestionCounts[q.questionText] = (oaQuestionCounts[q.questionText] || 0) + 1
       totalQuestionsCount++
     })
     
     exp.interviewQuestions.forEach(q => {
       interviewQuestions.push({ role: exp.role, content: q.questionText, year: exp.year })
+      interviewQuestionCounts[q.questionText] = (interviewQuestionCounts[q.questionText] || 0) + 1
       totalQuestionsCount++
     })
-    if (exp.tips && exp.tips.trim()) {
-      hrQuestions.push({ role: exp.role, content: exp.tips, year: exp.year })
-    }
 
     exp.tags.forEach(tag => {
       tagCounts[tag] = (tagCounts[tag] || 0) + 1
@@ -165,17 +172,40 @@ export async function getCompanyProfile(companyName: string) {
 
   const topTags = Object.entries(tagCounts)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
+    .slice(0, 10)
     .map(entry => entry[0])
+
+  const mostAskedOa = Object.entries(oaQuestionCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(entry => ({ question: entry[0], count: entry[1] }))
+
+  const mostAskedInterview = Object.entries(interviewQuestionCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(entry => ({ question: entry[0], count: entry[1] }))
+
+  // Hiring Insights
+  const applications = company.applications
+  const hiringInsights = {
+    totalApplied: applications.length,
+    totalAssessments: applications.filter(a => a.status === 'ONLINE_ASSESSMENT' || a.status === 'INTERVIEW' || a.status === 'OFFERED').length,
+    totalInterviews: applications.filter(a => a.status === 'INTERVIEW' || a.status === 'OFFERED').length,
+    totalOffers: applications.filter(a => a.status === 'OFFERED').length
+  }
 
   return {
     ...company,
     avgDifficulty: parseFloat(avgDifficulty),
     totalQuestionsCount,
+    assessmentReports,
+    interviewReports,
     oaQuestions,
     interviewQuestions,
-    hrQuestions,
     topTags,
+    mostAskedOa,
+    mostAskedInterview,
+    hiringInsights,
     resources,
     recentExperiences: [...experiences].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 5),
     topExperiences: [...experiences].sort((a, b) => b.upvotes - a.upvotes).slice(0, 5)
