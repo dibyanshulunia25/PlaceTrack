@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 export default async function CompaniesDirectoryPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const params = await searchParams
 

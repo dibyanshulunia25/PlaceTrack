@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 export default async function NewMockQuestionPage({
   searchParams,
 }: {
-  searchParams: { companyId?: string }
+  searchParams: Promise<{ companyId?: string }>
 }) {
   const companies = await getMockCompanies()
   const { companyId } = await searchParams

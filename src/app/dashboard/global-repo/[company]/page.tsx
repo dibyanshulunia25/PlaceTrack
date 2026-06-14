@@ -11,21 +11,24 @@ export default async function CompanyExperiencesPage({
   params,
   searchParams,
 }: {
-  params: { company: string }
-  searchParams: { [key: string]: string | string[] | undefined }
+  params: Promise<{ company: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
   const user = await currentUser()
   if (!user) redirect("/sign-in")
 
-  const decodedCompany = decodeURIComponent(params.company)
-  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1
+  const decodedCompany = decodeURIComponent(resolvedParams.company)
+  const page = typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page) : 1
   const limit = 9
 
   const company = await prisma.company.findFirst({
     where: { name: { equals: decodedCompany, mode: 'insensitive' } },
     include: {
       experiences: {
-        include: { user: true, company: true },
+        include: { user: true, company: true, assessmentQuestions: true, interviewQuestions: true },
         orderBy: { createdAt: 'desc' }
       }
     }
@@ -48,8 +51,8 @@ export default async function CompanyExperiencesPage({
   
   const totalQuestions = company.experiences.reduce((acc, exp) => {
     let count = 0;
-    if (exp.oaQuestions) count++;
-    if (exp.interviewQuestions) count++;
+    count += exp.assessmentQuestions.length;
+    count += exp.interviewQuestions.length;
     return acc + count;
   }, 0)
 

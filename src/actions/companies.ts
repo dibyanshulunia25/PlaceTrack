@@ -51,7 +51,7 @@ export async function getCompaniesDirectory({
         experiences: {
           select: {
             difficulty: true,
-            oaQuestions: true,
+            assessmentQuestions: true,
             interviewQuestions: true
           }
         }
@@ -71,11 +71,10 @@ export async function getCompaniesDirectory({
     const totalDiff = experiences.reduce((acc, exp) => acc + (exp.difficulty || 0), 0)
     const avgDifficulty = experiences.length > 0 ? (totalDiff / experiences.length).toFixed(1) : "0.0"
 
-    // Total questions (estimated by counting experiences that contain questions)
     let totalQuestions = 0
     experiences.forEach(exp => {
-      if (exp.oaQuestions && exp.oaQuestions.trim() !== '') totalQuestions++
-      if (exp.interviewQuestions && exp.interviewQuestions.trim() !== '') totalQuestions++
+      totalQuestions += exp.assessmentQuestions.length
+      totalQuestions += exp.interviewQuestions.length
     })
 
     return {
@@ -109,7 +108,9 @@ export async function getCompanyProfile(companyName: string) {
         include: {
           user: {
             select: { name: true, image: true }
-          }
+          },
+          assessmentQuestions: true,
+          interviewQuestions: true
         },
         orderBy: [
           { upvotes: 'desc' },
@@ -144,14 +145,15 @@ export async function getCompanyProfile(companyName: string) {
   const tagCounts: Record<string, number> = {}
 
   experiences.forEach(exp => {
-    if (exp.oaQuestions && exp.oaQuestions.trim()) {
-      oaQuestions.push({ role: exp.role, content: exp.oaQuestions, year: exp.year })
+    exp.assessmentQuestions.forEach(q => {
+      oaQuestions.push({ role: exp.role, content: q.questionText, year: exp.year })
       totalQuestionsCount++
-    }
-    if (exp.interviewQuestions && exp.interviewQuestions.trim()) {
-      interviewQuestions.push({ role: exp.role, content: exp.interviewQuestions, year: exp.year })
+    })
+    
+    exp.interviewQuestions.forEach(q => {
+      interviewQuestions.push({ role: exp.role, content: q.questionText, year: exp.year })
       totalQuestionsCount++
-    }
+    })
     if (exp.tips && exp.tips.trim()) {
       hrQuestions.push({ role: exp.role, content: exp.tips, year: exp.year })
     }

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 export default async function CompanyMockHub({
   params
 }: {
-  params: { company: string }
+  params: Promise<{ company: string }>
 }) {
   const decodedCompany = decodeURIComponent((await params).company)
   const company = await getCompanyMockHub(decodedCompany)

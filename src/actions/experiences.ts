@@ -7,8 +7,11 @@ import { revalidatePath } from "next/cache"
 import { experienceSubmissionLimit } from "@/lib/ratelimit"
 
 import { ExperienceSchema } from "@/lib/validations"
+import { z } from "zod"
 
-export async function createExperience(formData: FormData) {
+export type ExperienceFormData = z.infer<typeof ExperienceSchema>
+
+export async function createExperience(rawData: ExperienceFormData) {
   const user = await currentUser()
   if (!user) throw new Error("Unauthorized")
   const userId = user.id
@@ -16,22 +19,6 @@ export async function createExperience(formData: FormData) {
   const { success } = await experienceSubmissionLimit.limit(userId)
   if (!success) {
     throw new Error("Rate limit exceeded. Please wait before submitting another experience.")
-  }
-
-  // Parse and sanitize inputs using Zod
-  const rawData = {
-    companyName: formData.get("company"),
-    role: formData.get("role"),
-    title: formData.get("title"),
-    content: formData.get("content"),
-    oaQuestions: formData.get("oaQuestions") || undefined,
-    interviewQuestions: formData.get("interviewQuestions") || undefined,
-    tips: formData.get("tips") || undefined,
-    difficulty: formData.get("difficulty"),
-    year: formData.get("year"),
-    tags: formData.get("tags") || undefined,
-    isPublic: formData.get("isPublic") === "on",
-    isAnonymous: formData.get("isAnonymous") === "on",
   }
 
   const validatedData = ExperienceSchema.safeParse(rawData)
@@ -42,7 +29,29 @@ export async function createExperience(formData: FormData) {
   }
 
   const data = validatedData.data
-  const tags = data.tags ? data.tags.split(",").map(t => t.trim()).filter(Boolean) : []
+  const manualTags = data.tags ? data.tags.split(",").map(t => t.trim()).filter(Boolean) : []
+  
+  // Extract keywords from questions automatically
+  const allQuestionText = [
+    ...(data.oaQuestions?.map(q => q.value) || []),
+    ...(data.interviewQuestions?.map(q => q.value) || [])
+  ].join(" ").toLowerCase()
+  
+  const keywords = ["react", "nextjs", "node", "system design", "dp", "dynamic programming", "graphs", "trees", "greedy", "arrays", "strings", "sliding window", "two pointers", "sql", "dbms", "os", "operating system", "networking", "api", "rest", "graphql", "aws", "docker", "kubernetes", "behavioral", "leadership", "oop"]
+  const autoTags = keywords.filter(k => allQuestionText.includes(k)).map(k => {
+    // Capitalize properly
+    if (k === "dp") return "DP"
+    if (k === "sql") return "SQL"
+    if (k === "dbms") return "DBMS"
+    if (k === "os") return "OS"
+    if (k === "oop") return "OOP"
+    if (k === "aws") return "AWS"
+    if (k === "api") return "API"
+    if (k === "rest") return "REST"
+    return k.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+  })
+
+  const tags = Array.from(new Set([...manualTags, ...autoTags]))
 
   let company = await prisma.company.findFirst({
     where: { name: { equals: data.companyName, mode: 'insensitive' } }
@@ -59,8 +68,6 @@ export async function createExperience(formData: FormData) {
       title: data.title,
       role: data.role,
       content: data.content,
-      oaQuestions: data.oaQuestions,
-      interviewQuestions: data.interviewQuestions,
       tips: data.tips,
       tags,
       difficulty: data.difficulty,
@@ -71,6 +78,28 @@ export async function createExperience(formData: FormData) {
       companyId: company.id,
     }
   })
+
+  // Create Assessment Questions
+  if (data.oaQuestions && data.oaQuestions.length > 0) {
+    await prisma.assessmentQuestion.createMany({
+      data: data.oaQuestions.map((q, i) => ({
+        experienceId: experience.id,
+        questionText: q.value,
+        order: i
+      }))
+    })
+  }
+
+  // Create Interview Questions
+  if (data.interviewQuestions && data.interviewQuestions.length > 0) {
+    await prisma.interviewQuestion.createMany({
+      data: data.interviewQuestions.map((q, i) => ({
+        experienceId: experience.id,
+        questionText: q.value,
+        order: i
+      }))
+    })
+  }
 
   revalidatePath("/dashboard/experiences")
   revalidatePath("/experiences")

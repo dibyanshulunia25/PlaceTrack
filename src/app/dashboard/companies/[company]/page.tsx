@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 export default async function CompanyProfilePage({
   params
 }: {
-  params: { company: string }
+  params: Promise<{ company: string }>
 }) {
   const decodedCompanyName = decodeURIComponent((await params).company)
   const profile = await getCompanyProfile(decodedCompanyName)

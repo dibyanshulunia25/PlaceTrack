@@ -100,8 +100,8 @@ model Experience {
   title              String
   role               String   @default("Unknown")
   content            String   @db.Text
-  oaQuestions        String?  @db.Text
-  interviewQuestions String?  @db.Text
+  legacyOaQuestions        String?  @map("oaQuestions") @db.Text
+  legacyInterviewQuestions String?  @map("interviewQuestions") @db.Text
   tips               String?  @db.Text
   tags               String[] @default([])
   rating             Int      @default(0) // 1 to 5 scale
@@ -122,6 +122,8 @@ model Experience {
   company Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   votes   Vote[]
   reports Report[]
+  assessmentQuestions AssessmentQuestion[]
+  interviewQuestions  InterviewQuestion[]
 
   @@index([companyId])
   @@index([createdAt])
@@ -157,6 +159,30 @@ model Report {
   experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
 
   @@index([status])
+  @@index([experienceId])
+}
+
+model AssessmentQuestion {
+  id           String     @id @default(cuid())
+  experienceId String
+  questionText String     @db.Text
+  order        Int        @default(0)
+  createdAt    DateTime   @default(now())
+
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@index([experienceId])
+}
+
+model InterviewQuestion {
+  id           String     @id @default(cuid())
+  experienceId String
+  questionText String     @db.Text
+  order        Int        @default(0)
+  createdAt    DateTime   @default(now())
+
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
   @@index([experienceId])
 }
 

@@ -10,17 +10,20 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 export default async function ExperienceDetailsPage({
   params
 }: {
-  params: { company: string, id: string }
+  params: Promise<{ company: string, id: string }>
 }) {
+  const resolvedParams = await params;
   const user = await currentUser()
   if (!user) redirect("/sign-in")
 
   const experience = await prisma.experience.findUnique({
-    where: { id: params.id },
+    where: { id: resolvedParams.id },
     include: {
       company: true,
       user: true,
       votes: { where: { userId: user.id } },
+      assessmentQuestions: { orderBy: { order: 'asc' } },
+      interviewQuestions: { orderBy: { order: 'asc' } }
     }
   })
 
@@ -113,26 +116,36 @@ export default async function ExperienceDetailsPage({
           </div>
         </section>
 
-        {experience.oaQuestions && (
+        {experience.assessmentQuestions.length > 0 && (
           <section>
             <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2 mb-4">
               <Code2 className="text-blue-500 size-6" />
               Online Assessment
             </h2>
-            <div className="prose prose-neutral dark:prose-invert max-w-none bg-blue-500/5 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-6 whitespace-pre-wrap leading-relaxed shadow-sm">
-              {experience.oaQuestions}
+            <div className="space-y-4">
+              {experience.assessmentQuestions.map((q, i) => (
+                <div key={q.id} className="prose prose-neutral dark:prose-invert max-w-none bg-blue-500/5 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-6 shadow-sm">
+                  <div className="font-semibold text-blue-500 mb-2">Question {i + 1}</div>
+                  <div className="whitespace-pre-wrap leading-relaxed">{q.questionText}</div>
+                </div>
+              ))}
             </div>
           </section>
         )}
 
-        {experience.interviewQuestions && (
+        {experience.interviewQuestions.length > 0 && (
           <section>
             <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2 mb-4">
               <HelpCircle className="text-purple-500 size-6" />
               Interview Questions
             </h2>
-            <div className="prose prose-neutral dark:prose-invert max-w-none bg-purple-500/5 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6 whitespace-pre-wrap leading-relaxed shadow-sm">
-              {experience.interviewQuestions}
+            <div className="space-y-4">
+              {experience.interviewQuestions.map((q, i) => (
+                <div key={q.id} className="prose prose-neutral dark:prose-invert max-w-none bg-purple-500/5 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6 shadow-sm">
+                  <div className="font-semibold text-purple-500 mb-2">Question {i + 1}</div>
+                  <div className="whitespace-pre-wrap leading-relaxed">{q.questionText}</div>
+                </div>
+              ))}
             </div>
           </section>
         )}

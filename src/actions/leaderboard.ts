@@ -31,7 +31,7 @@ export async function getTopContributors(timeframe: Timeframe = "all-time") {
         select: {
           id: true,
           upvotes: true,
-          oaQuestions: true,
+          assessmentQuestions: true,
           interviewQuestions: true,
         }
       }
@@ -47,8 +47,8 @@ export async function getTopContributors(timeframe: Timeframe = "all-time") {
       score += 10 // +10 per experience
       
       let qCount = 0
-      if (exp.oaQuestions && exp.oaQuestions.trim()) qCount++
-      if (exp.interviewQuestions && exp.interviewQuestions.trim()) qCount++
+      qCount += exp.assessmentQuestions.length
+      qCount += exp.interviewQuestions.length
       
       score += qCount * 5 // +5 per question section
       totalQuestions += qCount
@@ -111,7 +111,7 @@ export async function getMostActiveCompanies(timeframe: Timeframe = "all-time") 
         select: {
           id: true,
           views: true,
-          oaQuestions: true,
+          assessmentQuestions: true,
           interviewQuestions: true
         }
       }
@@ -124,8 +124,8 @@ export async function getMostActiveCompanies(timeframe: Timeframe = "all-time") 
 
     company.experiences.forEach(exp => {
       views += exp.views
-      if (exp.oaQuestions && exp.oaQuestions.trim()) totalQuestions++
-      if (exp.interviewQuestions && exp.interviewQuestions.trim()) totalQuestions++
+      totalQuestions += exp.assessmentQuestions.length
+      totalQuestions += exp.interviewQuestions.length
     })
 
     return {

@@ -10,7 +10,7 @@ import { Search } from "lucide-react"
 export default async function ExperiencesRepository({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const user = await currentUser()
   if (!user) redirect("/sign-in")
@@ -40,7 +40,9 @@ export default async function ExperiencesRepository({
       { content: { search: formattedSearch } },
       { role: { search: formattedSearch } },
       { company: { is: { name: { search: formattedSearch } } } },
-      { tags: { hasSome: search.split(/\s+/) } }
+      { tags: { hasSome: search.split(/\s+/) } },
+      { assessmentQuestions: { some: { questionText: { search: formattedSearch } } } },
+      { interviewQuestions: { some: { questionText: { search: formattedSearch } } } }
     ]
     
     // Also extract year if a 4-digit number is present

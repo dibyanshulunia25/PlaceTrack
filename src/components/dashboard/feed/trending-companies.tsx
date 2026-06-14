@@ -6,7 +6,12 @@ import { prisma } from "@/lib/prisma"
 export async function TrendingCompanies() {
   const companies = await prisma.company.findMany({
     include: {
-      experiences: true,
+      experiences: {
+        include: {
+          assessmentQuestions: true,
+          interviewQuestions: true
+        }
+      }
     },
   })
 
@@ -28,8 +33,8 @@ export async function TrendingCompanies() {
         {trending.map((company, index) => {
           let questionsCount = 0;
           company.experiences.forEach(e => {
-            if (e.oaQuestions) questionsCount++;
-            if (e.interviewQuestions) questionsCount++;
+            questionsCount += e.assessmentQuestions.length;
+            questionsCount += e.interviewQuestions.length;
           })
 
           return (
