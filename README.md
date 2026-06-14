@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PlaceTrack 🚀
 
-## Getting Started
+PlaceTrack is a modern, full-stack placement management and resource discovery platform built with Next.js. It helps students and professionals track their job applications, share interview experiences, and discover curated preparation resources.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Application Tracking**: Keep tabs on your job applications, roles, and current statuses (Applied, Assessment, Interview, Offered, Rejected).
+- **Global Experience Repository**: Read and share detailed interview experiences, complete with upvoting and leaderboards.
+- **Resource Discovery Engine**: Browse curated preparation materials (videos, articles, guides) filterable by topic and company.
+- **Automated Email Workflows**: Built-in CRON jobs send automated reminders for upcoming interviews and nudge you to update stale applications.
+- **Secure Authentication**: Passwordless and social login powered by Clerk.
+- **Rate Limiting & Security**: Robust abuse prevention using Upstash Redis.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework**: Next.js 15 (App Router), React 19
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS, Framer Motion, shadcn/ui
+- **Database**: PostgreSQL (via Neon)
+- **ORM**: Prisma
+- **Authentication**: Clerk
+- **Rate Limiting**: Upstash Redis
+- **Email Service**: Nodemailer (via Gmail SMTP) & React Email
+- **Deployment**: Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentation Directory
 
-## Learn More
+For complete details on configuring, running, and deploying PlaceTrack, please refer to the guides in the `/docs` directory:
 
-To learn more about Next.js, take a look at the following resources:
+1. [Setup Guide](./docs/setup_guide.md) - How to clone, install, and run the project locally.
+2. [Environment Guide](./docs/environment_guide.md) - Detailed breakdown of all required `.env` variables.
+3. [Architecture Guide](./docs/architecture_guide.md) - Deep dive into the folder structure, DB schema, auth flow, and reminder workflows.
+4. [Deployment Guide](./docs/deployment_guide.md) - Step-by-step instructions for pushing to production on Vercel.
+5. [API Documentation](./docs/api_documentation.md) - Overview of server actions and Next.js API/CRON routes.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Quick Start
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Clone the repository.
+2. Run `npm install`.
+3. Copy `.env.example` to `.env` and fill in the required keys.
+4. Run `npx prisma db push` to sync the database.
+5. Run `npm run dev` to start the local development server.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Built for the community, to make placement tracking effortless.*
