@@ -1,6 +1,6 @@
 "use client"
 
-import { ApplicationStatus } from "@prisma/client"
+import type { ApplicationStatus } from "@prisma/client"
 import { Check, X, Minus } from "lucide-react"
 import { cn } from "@/lib/utils"
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { ApplicationStatus } from "@prisma/client"
+
 import { format } from "date-fns"
 import { MoreHorizontal, Building2, Calendar, MapPin, DollarSign, Trash, Edit } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"

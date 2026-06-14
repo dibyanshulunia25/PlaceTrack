@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { ApplicationStatus } from "@prisma/client"
+import type { ApplicationStatus } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,7 +15,7 @@ import { Loader2 } from "lucide-react"
 const formSchema = z.object({
   companyName: z.string().min(1, "Company Name is required"),
   role: z.string().min(1, "Position is required"),
-  status: z.nativeEnum(ApplicationStatus),
+  status: z.enum(["APPLIED", "ONLINE_ASSESSMENT", "INTERVIEW", "OFFERED", "REJECTED", "WITHDRAWN"]),
   appliedAt: z.string().min(1, "Application Date is required"),
   assessmentDate: z.string().optional(),
   interviewDate: z.string().optional(),
@@ -43,7 +43,7 @@ export function ApplicationForm({ initialData, onSuccess }: ApplicationFormProps
     defaultValues: {
       companyName: initialData?.company?.name || "",
       role: initialData?.role || "",
-      status: initialData?.status || ApplicationStatus.APPLIED,
+      status: initialData?.status || "APPLIED",
       appliedAt: formatDate(initialData?.appliedAt) || new Date().toISOString().split("T")[0],
       assessmentDate: formatDate(initialData?.assessmentDate) || "",
       interviewDate: formatDate(initialData?.interviewDate) || "",
@@ -104,12 +104,12 @@ export function ApplicationForm({ initialData, onSuccess }: ApplicationFormProps
               <SelectValue placeholder="Select a status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ApplicationStatus.APPLIED}>Applied</SelectItem>
-              <SelectItem value={ApplicationStatus.ONLINE_ASSESSMENT}>Online Assessment</SelectItem>
-              <SelectItem value={ApplicationStatus.INTERVIEW}>Interview</SelectItem>
-              <SelectItem value={ApplicationStatus.OFFERED}>Offered</SelectItem>
-              <SelectItem value={ApplicationStatus.REJECTED}>Rejected</SelectItem>
-              <SelectItem value={ApplicationStatus.WITHDRAWN}>Withdrawn</SelectItem>
+              <SelectItem value="APPLIED">Applied</SelectItem>
+              <SelectItem value="ONLINE_ASSESSMENT">Online Assessment</SelectItem>
+              <SelectItem value="INTERVIEW">Interview</SelectItem>
+              <SelectItem value="OFFERED">Offered</SelectItem>
+              <SelectItem value="REJECTED">Rejected</SelectItem>
+              <SelectItem value="WITHDRAWN">Withdrawn</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -120,14 +120,14 @@ export function ApplicationForm({ initialData, onSuccess }: ApplicationFormProps
           {errors.appliedAt && <p className="text-xs text-destructive">{errors.appliedAt.message}</p>}
         </div>
 
-        {(currentStatus === ApplicationStatus.ONLINE_ASSESSMENT || currentStatus === ApplicationStatus.INTERVIEW || currentStatus === ApplicationStatus.OFFERED || currentStatus === ApplicationStatus.REJECTED) && (
+        {(currentStatus === "ONLINE_ASSESSMENT" || currentStatus === "INTERVIEW" || currentStatus === "OFFERED" || currentStatus === "REJECTED") && (
           <div className="space-y-2">
             <Label htmlFor="assessmentDate">Assessment Date (Optional)</Label>
             <Input type="date" id="assessmentDate" {...register("assessmentDate")} />
           </div>
         )}
 
-        {(currentStatus === ApplicationStatus.INTERVIEW || currentStatus === ApplicationStatus.OFFERED || currentStatus === ApplicationStatus.REJECTED) && (
+        {(currentStatus === "INTERVIEW" || currentStatus === "OFFERED" || currentStatus === "REJECTED") && (
           <div className="space-y-2">
             <Label htmlFor="interviewDate">Interview Date (Optional)</Label>
             <Input type="date" id="interviewDate" {...register("interviewDate")} />
