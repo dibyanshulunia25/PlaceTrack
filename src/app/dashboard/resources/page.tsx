@@ -1,18 +1,15 @@
 import { prisma } from "@/lib/prisma"
+import { ResourceCard } from "@/components/resources/resource-card"
 import { ResourceFilters } from "@/components/resources/resource-filters"
 import { ResourceDiscoveryService } from "@/services/resource-discovery"
-import { Compass, Search, Bookmark, Target, TrendingUp } from "lucide-react"
-import { ResourceFeed } from "@/components/resources/resource-feed"
-import { fetchResources, getDiscoveryAnalytics } from "@/actions/discovery"
-
-export const dynamic = 'force-dynamic'
+import { Compass, PlaySquare, FileText, Bookmark, Search } from "lucide-react"
 
 export default async function ResourcesPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  // 1. Auto-seed mock data if empty
+  // 1. Auto-seed mock data if empty (for demonstration of Phase 17A.5)
   const count = await prisma.externalResource.count()
   if (count === 0) {
     await ResourceDiscoveryService.seedMockResources()
@@ -31,65 +28,123 @@ export default async function ResourcesPage({
   })
   const companyOptions = distinctCompanies.map(c => c.company as string).filter(Boolean).sort()
 
-  // 4. Fetch initial feed
-  const { resources, userBookmarks } = await fetchResources(1, 12, topicFilter, companyFilter)
-  
-  // 5. Fetch User Analytics
-  const analytics = await getDiscoveryAnalytics()
+  // 4. Fetch Resources based on filters
+  const whereClause: any = {}
+  if (topicFilter) {
+    whereClause.tags = { has: topicFilter }
+  }
+  if (companyFilter) {
+    whereClause.company = { equals: companyFilter, mode: 'insensitive' }
+  }
+
+  const allResources = await prisma.externalResource.findMany({
+    where: whereClause,
+    orderBy: { fetchedAt: 'desc' }
+  })
+
+  // 5. Categorize for Sections
+  // Recommended: Hand-picked or specific tags like "Interview Experience", "Guide"
+  const recommended = allResources.filter(r => 
+    r.title.toLowerCase().includes('guide') || 
+    r.title.toLowerCase().includes('preparation') || 
+    r.tags.includes('Interview Experience')
+  )
+
+  // Videos: source is YouTube or tags include Video
+  const videos = allResources.filter(r => 
+    r.source.toLowerCase().includes('youtube') || r.tags.includes('Video')
+  )
+
+  // Articles: source is Medium/GeeksforGeeks or tags include Article
+  const articles = allResources.filter(r => 
+    !r.source.toLowerCase().includes('youtube') && 
+    (r.source.toLowerCase().includes('medium') || r.source.toLowerCase().includes('geeks') || r.tags.includes('Article'))
+  )
+
+  // Topic Based (DSA, OS, DBMS) - Exclude recommended to avoid too much duplication, or just show all
+  const technical = allResources.filter(r => 
+    r.tags.includes('DSA') || r.tags.includes('OS') || r.tags.includes('DBMS') || r.tags.includes('System Design')
+  )
 
   return (
     <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 pb-16 animate-in fade-in duration-500">
       
       {/* Header */}
       <div className="flex flex-col items-center text-center space-y-4 pt-8 pb-4">
-        <div className="size-16 rounded-3xl bg-blue-500/10 flex items-center justify-center shadow-clay-inset mb-2 border border-blue-500/20">
-          <Compass className="size-8 text-blue-500" />
+        <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center shadow-clay-inset mb-2">
+          <Compass className="size-8 text-primary" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight">Discovery Engine</h1>
+        <h1 className="text-4xl md:text-5xl font-black tracking-tight">Resource Discovery Engine</h1>
         <p className="text-xl text-muted-foreground max-w-2xl">
-          Aggregating the best public preparation resources without the noise. Personalized to your active applications and search history.
+          Aggregating the best public preparation resources without the noise. Find guides, videos, and articles across the web.
         </p>
       </div>
-
-      {analytics && (
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4">
-            <div className="p-3 bg-blue-500/20 rounded-xl"><Target className="size-5 text-blue-500" /></div>
-            <div>
-              <p className="text-xs font-bold text-muted-foreground uppercase">Resources Explored</p>
-              <p className="text-2xl font-black">{analytics.viewedCount}</p>
-            </div>
-          </div>
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4">
-            <div className="p-3 bg-yellow-500/20 rounded-xl"><Bookmark className="size-5 text-yellow-500" /></div>
-            <div>
-              <p className="text-xs font-bold text-muted-foreground uppercase">Saved Resources</p>
-              <p className="text-2xl font-black">{analytics.savedCount}</p>
-            </div>
-          </div>
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4">
-            <div className="p-3 bg-emerald-500/20 rounded-xl"><TrendingUp className="size-5 text-emerald-500" /></div>
-            <div>
-              <p className="text-xs font-bold text-muted-foreground uppercase">Top Interests</p>
-              <p className="text-sm font-bold truncate max-w-[150px]">
-                {analytics.topTags.length > 0 ? analytics.topTags.slice(0, 2).join(", ") : "Start exploring!"}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Filters */}
       <ResourceFilters companies={companyOptions} />
 
-      {/* Infinite Scroll Feed */}
-      <ResourceFeed 
-        initialResources={resources} 
-        initialBookmarks={userBookmarks}
-        topic={topicFilter}
-        company={companyFilter}
-      />
-      
+      {allResources.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
+          <Search className="size-12 mb-4 opacity-20" />
+          <p>No resources found matching your filters.</p>
+        </div>
+      ) : (
+        <div className="space-y-16">
+          
+          {/* Section 1: Recommended */}
+          {recommended.length > 0 && (
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <Bookmark className="size-6 text-yellow-500" />
+                <h2 className="text-2xl font-bold tracking-tight">Recommended Resources</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {recommended.slice(0, 3).map(res => <ResourceCard key={res.id} resource={res} />)}
+              </div>
+            </section>
+          )}
+
+          {/* Section 2: Videos */}
+          {videos.length > 0 && (
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <PlaySquare className="size-6 text-red-500" />
+                <h2 className="text-2xl font-bold tracking-tight">Video Resources</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {videos.slice(0, 3).map(res => <ResourceCard key={res.id} resource={res} />)}
+              </div>
+            </section>
+          )}
+
+          {/* Section 3: Articles */}
+          {articles.length > 0 && (
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <FileText className="size-6 text-green-500" />
+                <h2 className="text-2xl font-bold tracking-tight">Articles & Guides</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {articles.slice(0, 3).map(res => <ResourceCard key={res.id} resource={res} />)}
+              </div>
+            </section>
+          )}
+
+          {/* Section 4: Topic Based */}
+          {technical.length > 0 && (
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <Compass className="size-6 text-blue-500" />
+                <h2 className="text-2xl font-bold tracking-tight">Topic-Based Deep Dives</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {technical.slice(0, 6).map(res => <ResourceCard key={res.id} resource={res} />)}
+              </div>
+            </section>
+          )}
+
+        </div>
+      )}
     </div>
   )
 }
