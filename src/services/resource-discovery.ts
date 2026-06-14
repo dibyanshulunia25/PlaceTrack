@@ -64,7 +64,7 @@ export class ResourceDiscoveryService {
       {
         title: "Striver's A2Z DSA Course/Playlist",
         summary: "The ultimate DSA playlist covering everything from basic arrays to advanced DP.",
-        url: "https://www.youtube.com/watch?v=EAR7De6GOMA&list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+        url: "https://www.youtube.com/playlist?list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
         source: "YouTube",
         company: null,
         role: "SDE",
@@ -73,7 +73,7 @@ export class ResourceDiscoveryService {
       {
         title: "System Design Interview – Step By Step Guide",
         summary: "A deep dive into how to structure your 45-minute system design interview.",
-        url: "https://www.youtube.com/watch?v=bBmLzOcgGgU",
+        url: "https://www.youtube.com/watch?v=v0t-N7QZ-6Q",
         source: "YouTube",
         company: null,
         role: "Senior SDE",
@@ -82,7 +82,7 @@ export class ResourceDiscoveryService {
       {
         title: "Operating Systems Crash Course for Interviews",
         summary: "Quick review of deadlocks, paging, scheduling, and concurrency.",
-        url: "https://www.youtube.com/watch?v=mXw9ruZaxzQ",
+        url: "https://www.youtube.com/watch?v=vV38217h92Q",
         source: "YouTube",
         company: null,
         role: "SDE",
@@ -135,5 +135,32 @@ export class ResourceDiscoveryService {
     })
 
     return { message: "Seeded mock resources successfully", count: mocks.length }
+  }
+
+  /**
+   * One-time helper migration to update older, invalid YouTube URLs inside existing DB records.
+   */
+  static async migrateBrokenUrls() {
+    try {
+      // 1. Striver DSA playlist
+      await prisma.externalResource.updateMany({
+        where: { url: "https://www.youtube.com/watch?v=EAR7De6GOMA&list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz" },
+        data: { url: "https://www.youtube.com/playlist?list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz" }
+      })
+
+      // 2. System Design Guide
+      await prisma.externalResource.updateMany({
+        where: { url: "https://www.youtube.com/watch?v=bBmLzOcgGgU" },
+        data: { url: "https://www.youtube.com/watch?v=v0t-N7QZ-6Q" }
+      })
+
+      // 3. Operating Systems Crash Course (if the old video had issues)
+      await prisma.externalResource.updateMany({
+        where: { url: "https://www.youtube.com/watch?v=mXw9ruZaxzQ" },
+        data: { url: "https://www.youtube.com/watch?v=vV38217h92Q" }
+      })
+    } catch (error) {
+      console.error("[Discovery] Error running one-time URL migration: ", error)
+    }
   }
 }

@@ -14,6 +14,8 @@ export default async function ResourcesPage({
   const count = await prisma.externalResource.count()
   if (count === 0) {
     await ResourceDiscoveryService.seedMockResources()
+  } else {
+    await ResourceDiscoveryService.migrateBrokenUrls()
   }
 
   // 2. Parse Filters
