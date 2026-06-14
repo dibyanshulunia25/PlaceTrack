@@ -87,8 +87,10 @@ export const MockQuestionSchema = z.object({
   companyId: z.string().cuid(),
   role: zSanitizedString.pipe(z.string().min(1, "Role is required").max(100)),
   category: zSanitizedString.pipe(z.string().min(1, "Category is required").max(50)),
-  question: zSanitizedString.pipe(z.string().min(10, "Question must be at least 10 characters").max(5000)),
-  answer: zSanitizedString.pipe(z.string().min(10, "Answer must be at least 10 characters").max(10000)),
+  questions: z.array(z.object({
+    question: zSanitizedString.pipe(z.string().min(5, "Question must be at least 5 characters").max(5000)),
+    answer: zSanitizedString.pipe(z.string().min(5, "Answer must be at least 5 characters").max(10000))
+  })).min(1, "At least one question is required"),
   difficulty: z.coerce.number().min(1).max(5),
   tags: z.array(zSanitizedString.pipe(z.string().max(30))).max(5),
   notes: zSanitizedString.pipe(z.string().max(5000)).optional(),

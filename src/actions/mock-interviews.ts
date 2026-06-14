@@ -80,8 +80,7 @@ export async function createMockQuestion(rawData: {
   companyId: string
   role: string
   category: string
-  question: string
-  answer: string
+  questions: { question: string, answer: string }[]
   difficulty: number
   tags: string[]
   notes?: string
@@ -104,15 +103,26 @@ export async function createMockQuestion(rawData: {
   const data = MockQuestionSchema.parse(rawData)
 
   try {
-    const mockQ = await prisma.mockQuestion.create({
-      data: {
-        ...data,
-        userId
-      }
+    const mockQuestions = data.questions.map(q => ({
+      companyId: data.companyId,
+      role: data.role,
+      category: data.category,
+      question: q.question,
+      answer: q.answer,
+      difficulty: data.difficulty,
+      tags: data.tags,
+      notes: data.notes,
+      isPublic: data.isPublic,
+      isAnonymous: data.isAnonymous,
+      userId
+    }))
+
+    await prisma.mockQuestion.createMany({
+      data: mockQuestions
     })
 
     revalidatePath(`/dashboard/mock-interviews`)
-    return mockQ
+    return { success: true, count: mockQuestions.length }
   } catch (error) {
     Logger.error(error instanceof Error ? error : new Error(String(error)), { tag: "database", action: "createMockQuestion" })
     throw new Error("Failed to create mock question")
