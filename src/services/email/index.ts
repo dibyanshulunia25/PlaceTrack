@@ -1,4 +1,5 @@
-import { resend } from "@/lib/resend"
+import nodemailer from "nodemailer"
+import { render } from "@react-email/render"
 import { WelcomeEmail } from "@/emails/welcome-email"
 import { NotificationEmail } from "@/emails/notification-email"
 import { T2ReminderEmail } from "@/emails/t-2-reminder"
@@ -6,23 +7,37 @@ import { T1ReminderEmail } from "@/emails/t-1-reminder"
 import { GoodLuckEmail } from "@/emails/good-luck-email"
 import { FeedbackRequestEmail } from "@/emails/feedback-request-email"
 
-const FROM_EMAIL = "PlaceTrack <noreply@placetrack.app>" // Replace with verified domain
+// Create a Nodemailer transporter using SMTP
+// To use Gmail, you must generate an "App Password" in your Google Account settings
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.SMTP_EMAIL,
+    pass: process.env.SMTP_PASSWORD,
+  },
+})
 
 export class EmailService {
   /**
    * Internal generic method with exponential backoff retry logic.
    */
-  private static async sendWithRetry(payload: any, maxRetries = 3) {
-    if (!process.env.RESEND_API_KEY) {
-      console.warn("RESEND_API_KEY not set. Skipping email.")
-      return { success: false, error: "API Key missing" }
+  private static async sendWithRetry(payload: { to: string, subject: string, html: string }, maxRetries = 3) {
+    if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+      console.warn("SMTP_EMAIL or SMTP_PASSWORD not set. Skipping email.")
+      return { success: false, error: "SMTP Credentials missing" }
+    }
+
+    const mailOptions = {
+      from: `"PlaceTrack" <${process.env.SMTP_EMAIL}>`,
+      to: payload.to,
+      subject: payload.subject,
+      html: payload.html,
     }
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const { data, error } = await resend.emails.send(payload)
-        if (error) throw error
-        return { success: true, data }
+        const info = await transporter.sendMail(mailOptions)
+        return { success: true, data: info }
       } catch (error) {
         console.error(`Email send attempt ${attempt} failed:`, error)
         if (attempt === maxRetries) {
@@ -36,58 +51,59 @@ export class EmailService {
   }
 
   static async sendWelcomeEmail(to: string, name: string) {
+    // Render the React component to an HTML string
+    const html = await render(WelcomeEmail({ name }))
     return this.sendWithRetry({
-      from: FROM_EMAIL,
       to,
       subject: "Welcome to PlaceTrack!",
-      react: WelcomeEmail({ name }),
+      html,
     })
   }
 
   static async sendNotificationEmail(to: string, subject: string, message: string) {
+    const html = await render(NotificationEmail({ subject, message }))
     return this.sendWithRetry({
-      from: FROM_EMAIL,
       to,
       subject,
-      react: NotificationEmail({ subject, message }),
+      html,
     })
   }
 
   // --- REMINDER EMAILS ---
 
   static async sendT2Reminder(to: string, props: any) {
+    const html = await render(T2ReminderEmail(props))
     return this.sendWithRetry({
-      from: FROM_EMAIL,
       to,
       subject: `Reminder: Your ${props.companyName} ${props.eventType} is in 2 days!`,
-      react: T2ReminderEmail(props),
+      html,
     })
   }
 
   static async sendT1Reminder(to: string, props: any) {
+    const html = await render(T1ReminderEmail(props))
     return this.sendWithRetry({
-      from: FROM_EMAIL,
       to,
       subject: `Action Required: Final Checklist for your ${props.companyName} ${props.eventType} tomorrow`,
-      react: T1ReminderEmail(props),
+      html,
     })
   }
 
   static async sendGoodLuckEmail(to: string, props: any) {
+    const html = await render(GoodLuckEmail(props))
     return this.sendWithRetry({
-      from: FROM_EMAIL,
       to,
       subject: `Good Luck Today at ${props.companyName}! 🚀`,
-      react: GoodLuckEmail(props),
+      html,
     })
   }
 
   static async sendFeedbackRequestEmail(to: string, props: any) {
+    const html = await render(FeedbackRequestEmail(props))
     return this.sendWithRetry({
-      from: FROM_EMAIL,
       to,
       subject: `How did your ${props.companyName} ${props.eventType} go?`,
-      react: FeedbackRequestEmail(props),
+      html,
     })
   }
 }
