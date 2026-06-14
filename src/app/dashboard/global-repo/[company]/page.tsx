@@ -36,7 +36,7 @@ export default async function CompanyExperiencesPage({
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <h3 className="text-2xl font-bold mb-2">Company Not Found</h3>
         <p className="text-muted-foreground mb-6">We couldn't find any experiences for {decodedCompany}.</p>
-        <Link href="/experiences" className="text-primary hover:underline">Return to Repository</Link>
+        <Link href="/dashboard/global-repo" className="text-primary hover:underline">Return to Repository</Link>
       </div>
     )
   }
@@ -59,7 +59,7 @@ export default async function CompanyExperiencesPage({
   return (
     <div className="space-y-8">
       <div>
-        <Link href="/experiences" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-4">
+        <Link href="/dashboard/global-repo" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to all experiences
         </Link>

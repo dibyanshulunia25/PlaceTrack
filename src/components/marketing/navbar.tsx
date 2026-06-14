@@ -15,12 +15,9 @@ export function Navbar() {
 
   const links = [
     { name: "Home", href: "/" },
-    { name: "Experiences", href: "/experiences" },
-    { name: "Mock Interviews", href: "/mock-interviews" },
-    { name: "Companies", href: "/companies" },
-    { name: "Leaderboard", href: "/leaderboard" },
-    { name: "Resources", href: "/resources" },
     { name: "About", href: "/about" },
+    { name: "Privacy", href: "/privacy" },
+    { name: "Terms", href: "/terms" },
   ]
 
   return (

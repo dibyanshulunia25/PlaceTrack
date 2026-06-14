@@ -28,7 +28,7 @@ export default async function ExperienceDetailsPage({
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <h3 className="text-2xl font-bold mb-2">Experience Not Found</h3>
-        <Link href="/experiences" className="text-primary hover:underline">Return to Repository</Link>
+        <Link href="/dashboard/global-repo" className="text-primary hover:underline">Return to Repository</Link>
       </div>
     )
   }

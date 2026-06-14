@@ -18,7 +18,7 @@ export const dashboardLinks = [
   },
   {
     title: 'Mock Interviews',
-    href: '/mock-interviews',
+    href: '/dashboard/mock-interviews',
     icon: BrainCircuit,
   },
   {
@@ -33,12 +33,12 @@ export const dashboardLinks = [
   },
   {
     title: 'Global Repo',
-    href: '/experiences',
+    href: '/dashboard/global-repo',
     icon: Globe,
   },
   {
     title: 'Discovery Engine',
-    href: '/resources',
+    href: '/dashboard/resources',
     icon: Compass,
   },
 ]

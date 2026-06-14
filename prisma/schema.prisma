@@ -108,6 +108,7 @@ model Experience {
   difficulty         Int      @default(0) // 1 to 5 scale
   year               Int      @default(2024)
   offerStatus        String? // Optional field, e.g., Offered, Rejected
+  isPublic           Boolean  @default(true)
   isAnonymous        Boolean  @default(false)
   upvotes            Int      @default(0)
   views              Int      @default(0)
@@ -183,6 +184,8 @@ model MockQuestion {
   answer     String   @db.Text
   difficulty Int      @default(1)
   tags       String[] @default([])
+  isPublic   Boolean  @default(true)
+  isAnonymous Boolean @default(false)
   createdAt  DateTime @default(now())
 
   companyId String

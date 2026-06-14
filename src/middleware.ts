@@ -9,16 +9,13 @@ const isPublicRoute = createRouteMatcher([
   '/sign-up(.*)'
 ])
 
-const isAdminRoute = createRouteMatcher(['/admin(.*)'])
 
 import { NextResponse } from 'next/server'
 import { authRateLimit } from '@/lib/ratelimit'
 
 export default clerkMiddleware(async (auth, request) => {
-  if (isAdminRoute(request) && (await auth()).sessionClaims?.role !== 'ADMIN') {
-    const url = new URL('/dashboard', request.url)
-    return Response.redirect(url)
-  }
+
+
 
   // Rate limit check for Auth routes
   if (request.nextUrl.pathname.startsWith('/sign-in') || request.nextUrl.pathname.startsWith('/sign-up')) {

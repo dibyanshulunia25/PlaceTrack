@@ -51,7 +51,7 @@ export async function InterviewPreparationWidget() {
         })}
       </div>
       
-      <Link href="/mock-interviews" className="block w-full text-center mt-4 text-xs font-bold text-muted-foreground hover:text-orange-500 transition-colors">
+      <Link href="/dashboard/mock-interviews" className="block w-full text-center mt-4 text-xs font-bold text-muted-foreground hover:text-orange-500 transition-colors">
         View Hub
       </Link>
     </div>

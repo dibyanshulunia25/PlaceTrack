@@ -11,16 +11,18 @@ export default async function SyncPage() {
 
   const email = user.emailAddresses?.[0]?.emailAddress
   const name = [user.firstName, user.lastName].filter(Boolean).join(' ')
-  const role = (user.publicMetadata?.role === 'ADMIN' ? 'ADMIN' : 'USER') as 'ADMIN' | 'USER'
 
   try {
+    const existingUser = await prisma.user.findUnique({ where: { id: user.id } })
+    const role = existingUser ? existingUser.role : (user.publicMetadata?.role === 'ADMIN' ? 'ADMIN' : 'USER') as 'ADMIN' | 'USER'
+
     await prisma.user.upsert({
       where: { id: user.id },
       update: {
         email,
         name,
         image: user.imageUrl,
-        role,
+        role, // preserves existing role if user already in DB
       },
       create: {
         id: user.id,

@@ -11,12 +11,12 @@ export default function DashboardLayout({
       {/* Desktop Sidebar */}
       <Sidebar />
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col">
         {/* Mobile Nav & Topbar */}
         <Topbar />
         
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto bg-surface">
+        <main className="flex-1 bg-surface">
           <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
             {children}
           </div>

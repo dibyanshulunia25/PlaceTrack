@@ -2,6 +2,7 @@ import { getMockCompanies, getSmartRecommendations } from "@/actions/mock-interv
 import { Building2, BrainCircuit, Target, ArrowRight, Play, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 
+
 export const dynamic = 'force-dynamic'
 
 export default async function MockInterviewsHub() {
@@ -68,7 +69,7 @@ export default async function MockInterviewsHub() {
                 </div>
 
                 <Link 
-                  href={`/mock-interviews/practice?company=${encodeURIComponent(rec.application.company.name)}`}
+                  href={`/dashboard/mock-interviews/practice?company=${encodeURIComponent(rec.application.company.name)}`}
                   className="flex items-center justify-center w-full gap-2 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold transition-all shadow-md hover:shadow-lg"
                 >
                   <Play className="size-4" fill="currentColor" />
@@ -82,16 +83,19 @@ export default async function MockInterviewsHub() {
 
       {/* Company Banks */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-2">
             <Building2 className="size-6 text-blue-500" />
             <h2 className="text-2xl font-bold">Company Question Banks</h2>
           </div>
+          <Link href="/dashboard/mock-interviews/new" className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors">
+            Contribute Question
+          </Link>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {companies.filter(c => c.totalQuestions > 0).map(company => (
-            <Link key={company.id} href={`/mock-interviews/${encodeURIComponent(company.name)}`}>
+            <Link key={company.id} href={`/dashboard/mock-interviews/${encodeURIComponent(company.name)}`}>
               <div className="group flex flex-col h-full p-6 space-y-6 border border-white/20 rounded-3xl bg-white/10 dark:bg-black/10 backdrop-blur-xl shadow-clay-sm hover:shadow-clay-md transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center justify-between">
                   <div className="size-12 rounded-xl bg-white/50 dark:bg-black/50 shadow-inner flex items-center justify-center overflow-hidden shrink-0">

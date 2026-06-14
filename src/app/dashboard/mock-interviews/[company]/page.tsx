@@ -54,11 +54,18 @@ export default async function CompanyMockHub({
 
             <div className="pt-4 flex flex-wrap gap-4">
               <Link 
-                href={`/mock-interviews/practice?company=${encodeURIComponent(company.name)}`}
+                href={`/dashboard/mock-interviews/practice?company=${encodeURIComponent(company.name)}`}
                 className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-md hover:shadow-lg"
               >
                 <Target className="size-5" />
                 Start Practice Session
+              </Link>
+              <Link 
+                href={`/dashboard/mock-interviews/new?companyId=${company.id}`}
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-foreground border border-white/20 px-6 py-3 rounded-xl font-bold transition-all shadow-sm"
+              >
+                <Plus className="size-5" />
+                Contribute Question
               </Link>
             </div>
           </div>
@@ -93,7 +100,7 @@ export default async function CompanyMockHub({
 
           <div className="grid gap-4">
             {company.mockQuestions.map(q => (
-              <Link key={q.id} href={`/mock-interviews/${encodeURIComponent(company.name)}/${q.id}`}>
+              <Link key={q.id} href={`/dashboard/mock-interviews/${encodeURIComponent(company.name)}/${q.id}`}>
                 <div className="p-5 rounded-2xl bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 shadow-clay-sm hover:shadow-clay-md transition-all group">
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <h3 className="font-bold text-lg line-clamp-2 group-hover:text-emerald-500 transition-colors">

@@ -67,7 +67,7 @@ export default async function ResourcesPage({
   )
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12 pb-16">
+    <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 pb-16 animate-in fade-in duration-500">
       
       {/* Header */}
       <div className="flex flex-col items-center text-center space-y-4 pt-8 pb-4">

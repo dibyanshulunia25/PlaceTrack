@@ -30,6 +30,7 @@ export async function createExperience(formData: FormData) {
     difficulty: formData.get("difficulty"),
     year: formData.get("year"),
     tags: formData.get("tags") || undefined,
+    isPublic: formData.get("isPublic") === "on",
     isAnonymous: formData.get("isAnonymous") === "on",
   }
 
@@ -64,6 +65,7 @@ export async function createExperience(formData: FormData) {
       tags,
       difficulty: data.difficulty,
       year: data.year,
+      isPublic: data.isPublic,
       isAnonymous: data.isAnonymous,
       userId,
       companyId: company.id,

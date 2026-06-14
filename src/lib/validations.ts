@@ -32,6 +32,7 @@ export const ExperienceSchema = z.object({
   difficulty: z.coerce.number().min(1).max(5),
   year: z.coerce.number().min(2000).max(new Date().getFullYear() + 1),
   tags: zSanitizedString.optional(),
+  isPublic: z.boolean().default(true),
   isAnonymous: z.boolean().default(false)
 })
 
@@ -74,7 +75,9 @@ export const MockQuestionSchema = z.object({
   question: zSanitizedString.pipe(z.string().min(10, "Question must be at least 10 characters").max(5000)),
   answer: zSanitizedString.pipe(z.string().min(10, "Answer must be at least 10 characters").max(10000)),
   difficulty: z.coerce.number().min(1).max(5),
-  tags: z.array(zSanitizedString.pipe(z.string().max(30))).max(5)
+  tags: z.array(zSanitizedString.pipe(z.string().max(30))).max(5),
+  isPublic: z.boolean().default(true),
+  isAnonymous: z.boolean().default(false)
 })
 
 // Practice Session Schema

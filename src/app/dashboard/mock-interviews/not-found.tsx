@@ -15,7 +15,7 @@ export default function MockHubNotFound() {
       </p>
       
       <Link
-        href="/mock-interviews"
+        href="/dashboard/mock-interviews"
         className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-xl font-bold transition-all shadow-md hover:shadow-lg"
       >
         <ArrowLeft className="size-5" />

@@ -24,9 +24,9 @@ export default async function MockQuestionDetailPage({
       
       {/* Top Nav */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium bg-white/5 w-fit px-4 py-2 rounded-xl border border-white/10">
-        <Link href="/mock-interviews" className="hover:text-primary transition-colors">Mock Hub</Link>
+        <Link href="/dashboard/mock-interviews" className="hover:text-primary transition-colors">Mock Hub</Link>
         <span>/</span>
-        <Link href={`/mock-interviews/${encodeURIComponent(question.company.name)}`} className="hover:text-primary transition-colors flex items-center gap-1">
+        <Link href={`/dashboard/mock-interviews/${encodeURIComponent(question.company.name)}`} className="hover:text-primary transition-colors flex items-center gap-1">
           {question.company.name}
         </Link>
         <span>/</span>

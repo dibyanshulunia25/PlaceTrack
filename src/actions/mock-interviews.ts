@@ -8,12 +8,19 @@ import { experienceSubmissionLimit } from "@/lib/ratelimit"
 import { Logger } from "@/lib/logger"
 
 export async function getMockCompanies() {
+  const { userId } = await auth()
+  
+  const mockQuestionsWhere = userId 
+    ? { OR: [{ isPublic: true }, { userId }] } 
+    : { isPublic: true }
+
   const companies = await prisma.company.findMany({
     include: {
       _count: {
-        select: { mockQuestions: true, practiceSessions: true }
+        select: { mockQuestions: { where: mockQuestionsWhere }, practiceSessions: true }
       },
       mockQuestions: {
+        where: mockQuestionsWhere,
         select: { userId: true, difficulty: true }
       }
     }
@@ -36,10 +43,16 @@ export async function getMockCompanies() {
 }
 
 export async function getCompanyMockHub(companyName: string) {
+  const { userId } = await auth()
+  const mockQuestionsWhere = userId 
+    ? { OR: [{ isPublic: true }, { userId }] } 
+    : { isPublic: true }
+
   const company = await prisma.company.findUnique({
     where: { name: companyName },
     include: {
       mockQuestions: {
+        where: mockQuestionsWhere,
         orderBy: { createdAt: 'desc' },
         include: {
           user: { select: { name: true, image: true } }
@@ -71,6 +84,8 @@ export async function createMockQuestion(rawData: {
   answer: string
   difficulty: number
   tags: string[]
+  isPublic: boolean
+  isAnonymous: boolean
 }) {
   const { userId } = await auth()
   if (!userId) {
@@ -95,7 +110,7 @@ export async function createMockQuestion(rawData: {
       }
     })
 
-    revalidatePath(`/mock-interviews`)
+    revalidatePath(`/dashboard/mock-interviews`)
     return mockQ
   } catch (error) {
     Logger.error(error instanceof Error ? error : new Error(String(error)), { tag: "database", action: "createMockQuestion" })
@@ -122,7 +137,7 @@ export async function savePracticeSession(rawData: {
     }
   })
   
-  revalidatePath(`/mock-interviews`)
+  revalidatePath(`/dashboard/mock-interviews`)
 }
 
 export async function getSmartRecommendations() {
@@ -145,7 +160,10 @@ export async function getSmartRecommendations() {
 
   const recommendations = await Promise.all(upcomingApplications.map(async (app) => {
     const questions = await prisma.mockQuestion.findMany({
-      where: { companyId: app.companyId },
+      where: { 
+        companyId: app.companyId,
+        OR: [{ isPublic: true }, { userId }]
+      },
       take: 20
     })
 

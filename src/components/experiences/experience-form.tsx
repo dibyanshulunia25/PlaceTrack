@@ -117,6 +117,11 @@ export function ExperienceForm({ onSuccess }: { onSuccess?: () => void }) {
         <Input id="tags" name="tags" placeholder="e.g. System Design, DP, Graphs (comma separated)" />
       </div>
 
+      <div className="flex items-center space-x-2 pt-2">
+        <input type="checkbox" id="isPublic" name="isPublic" defaultChecked className="rounded border-gray-300 text-primary focus:ring-primary size-4" />
+        <Label htmlFor="isPublic" className="font-normal cursor-pointer text-sm">Post publicly to global repository</Label>
+      </div>
+
       <div className="flex items-center space-x-2 pb-2 pt-2">
         <input type="checkbox" id="isAnonymous" name="isAnonymous" className="rounded border-gray-300 text-primary focus:ring-primary size-4" />
         <Label htmlFor="isAnonymous" className="font-normal cursor-pointer text-sm">Post anonymously</Label>

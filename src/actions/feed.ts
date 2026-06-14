@@ -37,6 +37,15 @@ export async function fetchFeedExperiences(rawArgs: {
 
   const where: any = {}
   
+  if (userId) {
+    where.OR = [
+      { isPublic: true },
+      { userId: userId }
+    ]
+  } else {
+    where.isPublic = true
+  }
+  
   if (company) {
     where.company = { is: { name: { search: formatSearchQuery(company) } } }
   }
