@@ -83,7 +83,7 @@ export function Navbar() {
             {userId && (
               <>
                 <Link href="/dashboard">
-                  <Button variant="ghost" className="hidden sm:flex mr-2">
+                  <Button variant="ghost" className="mr-2">
                     Dashboard
                   </Button>
                 </Link>

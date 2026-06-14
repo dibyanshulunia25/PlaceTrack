@@ -6,6 +6,7 @@ import { T2ReminderEmail } from "@/emails/t-2-reminder"
 import { T1ReminderEmail } from "@/emails/t-1-reminder"
 import { GoodLuckEmail } from "@/emails/good-luck-email"
 import { FeedbackRequestEmail } from "@/emails/feedback-request-email"
+import { StaleApplicationReminderEmail } from "@/emails/stale-application-reminder"
 
 // Create a Nodemailer transporter using SMTP
 // To use Gmail, you must generate an "App Password" in your Google Account settings
@@ -103,6 +104,15 @@ export class EmailService {
     return this.sendWithRetry({
       to,
       subject: `How did your ${props.companyName} ${props.eventType} go?`,
+      html,
+    })
+  }
+
+  static async sendStaleApplicationReminder(to: string, props: any) {
+    const html = await render(StaleApplicationReminderEmail(props))
+    return this.sendWithRetry({
+      to,
+      subject: `Any updates on your application at ${props.companyName}?`,
       html,
     })
   }

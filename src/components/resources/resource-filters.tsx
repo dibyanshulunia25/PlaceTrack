@@ -17,11 +17,11 @@ export function ResourceFilters({ companies }: { companies: string[] }) {
     if (value) params.set(key, value)
     else params.delete(key)
     
-    router.push(`/resources?${params.toString()}`)
+    router.push(`/dashboard/resources?${params.toString()}`)
   }
 
   const clearFilters = () => {
-    router.push(`/resources`)
+    router.push(`/dashboard/resources`)
   }
 
   const hasFilters = currentTopic || currentCompany

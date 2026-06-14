@@ -19,6 +19,21 @@ const formSchema = z.object({
   appliedAt: z.string().min(1, "Application Date is required"),
   assessmentDate: z.string().optional(),
   interviewDate: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.status === "ONLINE_ASSESSMENT" && !data.assessmentDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["assessmentDate"],
+      message: "Assessment Date is required for Online Assessment",
+    });
+  }
+  if ((data.status === "INTERVIEW" || data.status === "OFFERED" || data.status === "REJECTED") && !data.interviewDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["interviewDate"],
+      message: "Interview Date is required",
+    });
+  }
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -122,15 +137,21 @@ export function ApplicationForm({ initialData, onSuccess }: ApplicationFormProps
 
         {(currentStatus === "ONLINE_ASSESSMENT" || currentStatus === "INTERVIEW" || currentStatus === "OFFERED" || currentStatus === "REJECTED") && (
           <div className="space-y-2">
-            <Label htmlFor="assessmentDate">Assessment Date (Optional)</Label>
+            <Label htmlFor="assessmentDate">
+              Assessment Date {currentStatus === "ONLINE_ASSESSMENT" ? "" : "(Optional)"}
+            </Label>
             <Input type="date" id="assessmentDate" {...register("assessmentDate")} />
+            {errors.assessmentDate && <p className="text-xs text-destructive">{errors.assessmentDate.message}</p>}
           </div>
         )}
 
         {(currentStatus === "INTERVIEW" || currentStatus === "OFFERED" || currentStatus === "REJECTED") && (
           <div className="space-y-2">
-            <Label htmlFor="interviewDate">Interview Date (Optional)</Label>
+            <Label htmlFor="interviewDate">
+              Interview Date
+            </Label>
             <Input type="date" id="interviewDate" {...register("interviewDate")} />
+            {errors.interviewDate && <p className="text-xs text-destructive">{errors.interviewDate.message}</p>}
           </div>
         )}
       </div>

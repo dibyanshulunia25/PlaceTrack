@@ -32,7 +32,7 @@ export function TrendingGrid({ companies, topics }: { companies: Company[], topi
 
         <div className="space-y-3">
           {companies.map((company, i) => (
-            <Link key={company.id} href={`/companies/${encodeURIComponent(company.name)}`}>
+            <Link key={company.id} href={`/dashboard/global-repo/${encodeURIComponent(company.name)}`}>
               <div className="flex items-center gap-3 p-3 rounded-xl bg-white/20 dark:bg-white/5 border border-white/10 shadow-sm hover:bg-white/30 transition-colors mb-3">
                 <div className="font-bold text-muted-foreground w-4">{i + 1}</div>
                 <div className="size-8 rounded-lg bg-white/50 dark:bg-black/50 overflow-hidden shrink-0 flex items-center justify-center">

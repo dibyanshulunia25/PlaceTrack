@@ -48,6 +48,21 @@ export const ApplicationSchema = z.object({
   assessmentDate: z.coerce.date().nullable().optional(),
   interviewDate: z.coerce.date().nullable().optional(),
   offerDeadline: z.coerce.date().nullable().optional()
+}).superRefine((data, ctx) => {
+  if (data.status === "ONLINE_ASSESSMENT" && !data.assessmentDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["assessmentDate"],
+      message: "Assessment Date is required for Online Assessment status",
+    });
+  }
+  if ((data.status === "INTERVIEW" || data.status === "OFFERED" || data.status === "REJECTED") && !data.interviewDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["interviewDate"],
+      message: "Interview Date is required for Interview or later status",
+    });
+  }
 })
 
 // Search Validation Schema
