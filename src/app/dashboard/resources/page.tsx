@@ -3,6 +3,7 @@ import { ResourceCard } from "@/components/resources/resource-card"
 import { ResourceFilters } from "@/components/resources/resource-filters"
 import { ResourceDiscoveryService } from "@/services/resource-discovery"
 import { Compass, PlaySquare, FileText, Bookmark, Search } from "lucide-react"
+import { LoadMoreButton } from "@/components/resources/load-more-button"
 
 export default async function ResourcesPage({
   searchParams,
@@ -99,8 +100,9 @@ export default async function ResourcesPage({
                 <h2 className="text-2xl font-bold tracking-tight">Recommended Resources</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recommended.slice(0, 3).map(res => <ResourceCard key={res.id} resource={res} />)}
+                {recommended.map(res => <ResourceCard key={res.id} resource={res} />)}
               </div>
+              <LoadMoreButton category="recommended" label="Load More Recommended" />
             </section>
           )}
 
@@ -112,8 +114,9 @@ export default async function ResourcesPage({
                 <h2 className="text-2xl font-bold tracking-tight">Video Resources</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {videos.slice(0, 3).map(res => <ResourceCard key={res.id} resource={res} />)}
+                {videos.map(res => <ResourceCard key={res.id} resource={res} />)}
               </div>
+              <LoadMoreButton category="videos" label="Load More Videos" />
             </section>
           )}
 
@@ -125,8 +128,9 @@ export default async function ResourcesPage({
                 <h2 className="text-2xl font-bold tracking-tight">Articles & Guides</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.slice(0, 3).map(res => <ResourceCard key={res.id} resource={res} />)}
+                {articles.map(res => <ResourceCard key={res.id} resource={res} />)}
               </div>
+              <LoadMoreButton category="articles" label="Load More Articles" />
             </section>
           )}
 
@@ -138,8 +142,9 @@ export default async function ResourcesPage({
                 <h2 className="text-2xl font-bold tracking-tight">Topic-Based Deep Dives</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {technical.slice(0, 6).map(res => <ResourceCard key={res.id} resource={res} />)}
+                {technical.map(res => <ResourceCard key={res.id} resource={res} />)}
               </div>
+              <LoadMoreButton category="technical" label="Load More Deep Dives" />
             </section>
           )}
 
