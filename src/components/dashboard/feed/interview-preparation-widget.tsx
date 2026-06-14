@@ -1,19 +1,29 @@
-import { getSmartRecommendations } from "@/actions/mock-interviews"
-import { Target, ArrowRight } from "lucide-react"
+import { getSmartRecommendations, getUserPracticeAnalytics } from "@/actions/mock-interviews"
+import { Target, ArrowRight, Flame } from "lucide-react"
 import Link from "next/link"
 
 export async function InterviewPreparationWidget() {
-  const recommendations = await getSmartRecommendations()
+  const [recommendations, analytics] = await Promise.all([
+    getSmartRecommendations(),
+    getUserPracticeAnalytics()
+  ])
 
-  if (recommendations.length === 0) return null
+  if (recommendations.length === 0 && analytics.totalSessions === 0) return null
 
   return (
     <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-md rounded-3xl border border-orange-500/20 p-5 shadow-clay-sm relative overflow-hidden">
       <div className="absolute top-0 right-0 p-16 bg-orange-500/20 rounded-full blur-3xl -z-10 mix-blend-multiply" />
       
-      <div className="flex items-center gap-2 mb-4">
-        <Target className="size-5 text-orange-500" />
-        <h3 className="font-bold text-lg text-foreground">Interview Prep</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Target className="size-5 text-orange-500" />
+          <h3 className="font-bold text-lg text-foreground">Interview Prep</h3>
+        </div>
+        {analytics.streak > 0 && (
+          <div className="flex items-center gap-1 text-sm font-bold text-orange-500 bg-orange-500/10 px-2 py-1 rounded-lg">
+            <Flame className="size-4" /> {analytics.streak} Day Streak
+          </div>
+        )}
       </div>
 
       <div className="space-y-4 z-10 relative">
@@ -35,24 +45,46 @@ export async function InterviewPreparationWidget() {
                 ) : null}
               </div>
 
-              <div className="flex items-center justify-between mt-4">
+              <div className="mt-3">
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="font-semibold text-muted-foreground">Preparation Status</span>
+                  <span className="font-bold text-emerald-500">Active</span>
+                </div>
+                <div className="w-full bg-black/10 rounded-full h-1.5 mb-3">
+                  <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: '45%' }}></div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mt-2">
                 <span className="text-xs font-semibold text-muted-foreground bg-background/50 px-2 py-1 rounded">
-                  {rec.recommendedQuestions.length} Questions
+                  {rec.recommendedQuestions.length} Recommended
                 </span>
                 <Link 
-                  href={`/mock-interviews/practice?company=${encodeURIComponent(rec.application.company.name)}`}
-                  className="flex items-center gap-1 text-xs font-bold text-orange-500 hover:text-orange-600 transition-colors"
+                  href={`/dashboard/mock-interviews/practice?company=${encodeURIComponent(rec.application.company.name)}`}
+                  className="flex items-center gap-1 text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors shadow-sm"
                 >
-                  Start Practice <ArrowRight className="size-3" />
+                  Continue Practice <ArrowRight className="size-3" />
                 </Link>
               </div>
             </div>
           )
         })}
+        
+        {recommendations.length === 0 && analytics.totalSessions > 0 && (
+          <div className="p-4 bg-white/20 dark:bg-black/20 rounded-2xl border border-white/20 shadow-sm text-center">
+            <p className="text-sm font-semibold mb-3">You have practiced {analytics.totalSessions} questions overall.</p>
+            <Link 
+              href={`/dashboard/mock-interviews`}
+              className="inline-flex items-center gap-1 text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-xl transition-colors shadow-sm"
+            >
+              Continue Practice <ArrowRight className="size-3" />
+            </Link>
+          </div>
+        )}
       </div>
       
       <Link href="/dashboard/mock-interviews" className="block w-full text-center mt-4 text-xs font-bold text-muted-foreground hover:text-orange-500 transition-colors">
-        View Hub
+        View Full Hub
       </Link>
     </div>
   )

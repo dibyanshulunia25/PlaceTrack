@@ -91,6 +91,7 @@ export const MockQuestionSchema = z.object({
   answer: zSanitizedString.pipe(z.string().min(10, "Answer must be at least 10 characters").max(10000)),
   difficulty: z.coerce.number().min(1).max(5),
   tags: z.array(zSanitizedString.pipe(z.string().max(30))).max(5),
+  notes: zSanitizedString.pipe(z.string().max(5000)).optional(),
   isPublic: z.boolean().default(true),
   isAnonymous: z.boolean().default(false)
 })
