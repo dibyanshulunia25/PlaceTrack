@@ -130,7 +130,7 @@ export default async function MockInterviewsHub() {
             </Link>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
             {companies.filter(c => c.totalQuestions > 0).map(company => (
               <Link key={company.id} href={`/dashboard/mock-interviews/${encodeURIComponent(company.name)}`}>
                 <div className="group flex flex-col h-full p-6 space-y-6 border border-white/20 rounded-3xl bg-white/10 dark:bg-black/10 backdrop-blur-xl shadow-clay-sm hover:shadow-clay-md transition-all duration-300 hover:-translate-y-1">

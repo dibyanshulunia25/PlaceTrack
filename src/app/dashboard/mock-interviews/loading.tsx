@@ -31,7 +31,7 @@ export default function MockHubLoading() {
           <Skeleton className="h-8 w-64" />
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
           {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
             <Skeleton key={i} className="h-48 w-full rounded-3xl" />
           ))}
