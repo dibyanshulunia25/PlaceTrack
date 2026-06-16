@@ -28,9 +28,9 @@ export function PracticeFlashcards({ questions, companyName }: { questions: any[
     }
   }
 
-  const handleFinish = async () => {
+  const handleFinish = () => {
     // Ideally call the server action `savePracticeSession` here
-    router.push(`/mock-interviews/${encodeURIComponent(companyName)}`)
+    router.push(`/dashboard/mock-interviews/${encodeURIComponent(companyName)}`)
   }
 
   if (questions.length === 0) {

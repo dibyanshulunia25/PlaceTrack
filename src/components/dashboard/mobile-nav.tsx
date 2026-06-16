@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
@@ -8,6 +8,7 @@ import { dashboardLinks } from "./nav-links"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { ExperienceFilters } from "@/components/experiences/experience-filters"
 
 export function MobileNav() {
   const [open, setOpen] = useState(false)
@@ -30,7 +31,7 @@ export function MobileNav() {
             <span className="font-bold text-xl tracking-tight">PlaceTrack</span>
           </Link>
         </div>
-        <div className="overflow-y-auto py-6 px-4">
+        <div className="overflow-y-auto py-6 px-4 flex flex-col h-[calc(100vh-4rem)]">
           <nav className="flex flex-col space-y-2">
             {dashboardLinks.map((link) => {
               const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`) && link.href !== '/dashboard'

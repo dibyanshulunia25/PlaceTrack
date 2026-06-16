@@ -19,32 +19,32 @@ export function PublicExperienceCard({ experience, index }: { experience: any, i
       <Link href={`/dashboard/global-repo/${encodeURIComponent(experience.company.name)}/${experience.id}`}>
         <Card className="bg-white dark:bg-white/5 backdrop-blur-xl border-border/80 dark:border-white/10 shadow-md dark:shadow-none hover:shadow-xl transition-all flex flex-col h-full cursor-pointer">
           <CardHeader className="pb-3">
-            <div className="flex justify-between items-start gap-4">
-              <div className="flex gap-4 items-start">
-                <div onClick={e => e.preventDefault()}>
-                  <VoteButtons 
-                    experienceId={experience.id} 
-                    initialUpvotes={experience.upvotes} 
-                    initialUserVote={experience.votes?.[0]?.value} 
-                  />
-                </div>
-                <div className="space-y-1">
-                  <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
+            <div className="flex gap-4 items-start">
+              <div onClick={e => e.preventDefault()} className="flex-shrink-0 pt-0.5">
+                <VoteButtons 
+                  experienceId={experience.id} 
+                  initialUpvotes={experience.upvotes} 
+                  initialUserVote={experience.votes?.[0]?.value} 
+                />
+              </div>
+              <div className="flex-1 min-w-0 flex flex-col gap-2.5">
+                <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors line-clamp-2">
                   {experience.title}
                 </CardTitle>
-                <CardDescription className="flex items-center gap-2 text-sm flex-wrap mt-1">
-                  <span className="flex items-center gap-1 font-semibold text-foreground bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+                
+                <div className="flex items-center">
+                  <StarRating value={experience.difficulty} readonly />
+                </div>
+
+                <CardDescription className="flex items-center gap-2 text-sm overflow-hidden whitespace-nowrap">
+                  <span className="flex items-center gap-1 font-semibold text-foreground bg-primary/10 text-primary px-2 py-0.5 rounded-md flex-shrink-0">
                     <Building className="size-3.5" />
-                    {experience.company.name}
+                    <span className="truncate max-w-[120px]">{experience.company.name}</span>
                   </span>
-                  <span className="text-muted-foreground px-2 py-0.5 border border-border/50 rounded-md">
+                  <span className="text-muted-foreground px-2 py-0.5 border border-border/50 rounded-md truncate">
                     {experience.role}
                   </span>
                 </CardDescription>
-              </div>
-              </div>
-              <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                <StarRating value={experience.difficulty} readonly />
               </div>
             </div>
           </CardHeader>

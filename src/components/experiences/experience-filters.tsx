@@ -39,54 +39,51 @@ export function ExperienceFilters() {
   }
 
   return (
-    <div className="bg-white/40 dark:bg-white/5 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-clay-light dark:shadow-none rounded-2xl p-6 sticky top-20">
-      <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-        Filters
-      </h3>
-      
-      <form onSubmit={handleSearch} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="search">Keywords</Label>
+    <div className="w-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-clay-light dark:shadow-none rounded-2xl p-4">
+      <form onSubmit={handleSearch} className="flex flex-col lg:flex-row lg:items-end gap-4">
+        
+        <div className="flex-1 space-y-2">
+          <Label htmlFor="search" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Keywords</Label>
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input 
               id="search" 
               name="search" 
               placeholder="Search..." 
-              className="pl-9 bg-background/50 border-white/20 dark:border-white/10" 
+              className="pl-10 h-10 text-sm bg-background/50 border-white/20 dark:border-white/10 rounded-xl" 
               defaultValue={searchParams.get("search") || ""}
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="company">Company</Label>
+        <div className="w-full lg:w-48 space-y-2">
+          <Label htmlFor="company" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Company</Label>
           <Input 
             id="company" 
             name="company" 
             placeholder="e.g. Google" 
-            className="bg-background/50 border-white/20 dark:border-white/10"
+            className="h-10 text-sm bg-background/50 border-white/20 dark:border-white/10 rounded-xl"
             defaultValue={searchParams.get("company") || ""}
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="role">Role</Label>
+        <div className="w-full lg:w-40 space-y-2">
+          <Label htmlFor="role" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Role</Label>
           <Input 
             id="role" 
             name="role" 
             placeholder="e.g. SDE" 
-            className="bg-background/50 border-white/20 dark:border-white/10"
+            className="h-10 text-sm bg-background/50 border-white/20 dark:border-white/10 rounded-xl"
             defaultValue={searchParams.get("role") || ""}
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="difficulty">Difficulty</Label>
+        <div className="w-full lg:w-40 space-y-2">
+          <Label htmlFor="difficulty" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Difficulty</Label>
           <select 
             id="difficulty" 
             name="difficulty" 
-            className="flex h-10 w-full items-center justify-between rounded-md border border-white/20 dark:border-white/10 bg-background/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-full items-center justify-between rounded-xl border border-white/20 dark:border-white/10 bg-background/50 px-3 py-1.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             defaultValue={searchParams.get("difficulty") || "all"}
           >
             <option value="all">All Levels</option>
@@ -98,23 +95,23 @@ export function ExperienceFilters() {
           </select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="year">Year</Label>
+        <div className="w-full lg:w-28 space-y-2">
+          <Label htmlFor="year" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Year</Label>
           <Input 
             id="year" 
             name="year" 
             type="number" 
             placeholder="e.g. 2024" 
-            className="bg-background/50 border-white/20 dark:border-white/10"
+            className="h-10 text-sm bg-background/50 border-white/20 dark:border-white/10 rounded-xl"
             defaultValue={searchParams.get("year") || ""}
           />
         </div>
 
-        <div className="pt-4 flex flex-col gap-2">
-          <Button type="submit" className="w-full bg-primary hover:opacity-90">Apply Filters</Button>
-          <Button type="button" variant="outline" className="w-full border-border/50" onClick={handleClear}>
-            <FilterX className="mr-2 h-4 w-4" />
-            Clear Filters
+        <div className="flex gap-2 w-full lg:w-auto mt-4 lg:mt-0">
+          <Button type="submit" className="h-10 bg-primary hover:opacity-90 rounded-xl px-6 flex-1 lg:flex-none">Apply</Button>
+          <Button type="button" variant="outline" className="h-10 border-border/50 rounded-xl px-4" onClick={handleClear}>
+            <FilterX className="h-4 w-4" />
+            <span className="sr-only">Clear</span>
           </Button>
         </div>
       </form>

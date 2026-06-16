@@ -228,7 +228,7 @@ export function ExperienceForm({ onSuccess }: { onSuccess?: () => void }) {
       </div>
 
       <div className="flex items-center space-x-2 pt-2">
-        <input type="checkbox" id="isPublic" className="rounded border-gray-300 text-primary focus:ring-primary size-4" {...register("isPublic")} />
+        <input type="checkbox" id="isPublic" className="rounded border-gray-300 text-primary focus:ring-primary size-4" {...register("isPublic")} disabled />
         <Label htmlFor="isPublic" className="font-normal cursor-pointer text-sm">Post publicly to global repository</Label>
       </div>
 

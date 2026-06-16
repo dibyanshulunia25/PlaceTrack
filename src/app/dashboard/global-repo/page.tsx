@@ -2,10 +2,11 @@ import { prisma } from "@/lib/prisma"
 import { PublicExperienceCard } from "@/components/experiences/public-experience-card"
 import { redirect } from "next/navigation"
 import { currentUser } from "@clerk/nextjs/server"
-import { ExperienceFilters } from "@/components/experiences/experience-filters"
 import { PaginationWrapper } from "@/components/experiences/pagination-wrapper"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Search } from "lucide-react"
+import { ExperienceFilters } from "@/components/experiences/experience-filters"
+import { Suspense } from "react"
 
 export default async function ExperiencesRepository({
   searchParams,
@@ -18,7 +19,7 @@ export default async function ExperiencesRepository({
   const params = await searchParams
 
   const page = typeof params.page === 'string' ? parseInt(params.page) : 1
-  const limit = 9
+  const limit = 12
   
   const search = typeof params.search === 'string' ? params.search : undefined
   const company = typeof params.company === 'string' ? params.company : undefined
@@ -86,16 +87,9 @@ export default async function ExperiencesRepository({
   const totalPages = Math.ceil(total / limit)
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-12 animate-in fade-in duration-500">
-      <div className="flex flex-col lg:flex-row gap-8">
-      {/* Sidebar Filters */}
-      <aside className="w-full lg:w-64 flex-shrink-0">
-        <ExperienceFilters />
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 space-y-6">
-        <div className="mb-8">
+    <div className="container max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8 animate-in fade-in duration-500">
+      <div className="flex flex-col space-y-6">
+        <div className="mb-2">
           <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500">
             Experience Repository
           </h1>
@@ -103,6 +97,10 @@ export default async function ExperiencesRepository({
             Browse {total} interview experiences from the community.
           </p>
         </div>
+
+        <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-2xl"></div>}>
+          <ExperienceFilters />
+        </Suspense>
 
         {experiences.length === 0 ? (
           <EmptyState
@@ -122,7 +120,6 @@ export default async function ExperiencesRepository({
           </>
         )}
       </div>
-    </div>
     </div>
   )
 }

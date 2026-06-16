@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { dashboardLinks } from './nav-links'
 import { cn } from '@/lib/utils'
+import { ExperienceFilters } from '@/components/experiences/experience-filters'
+import { Suspense } from 'react'
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -18,7 +20,7 @@ export function Sidebar() {
           <span className="font-bold text-xl tracking-tight">PlaceTrack</span>
         </Link>
       </div>
-      <div className="flex-1 overflow-y-auto py-6 px-4">
+      <div className="flex-1 overflow-y-auto py-6 px-4 flex flex-col">
         <nav className="flex flex-col space-y-2">
           {dashboardLinks.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`) && link.href !== '/dashboard'
