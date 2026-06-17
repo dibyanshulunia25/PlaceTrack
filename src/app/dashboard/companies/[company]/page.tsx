@@ -91,7 +91,7 @@ export default async function CompanyProfilePage({
           <div className="flex items-center gap-2"><Play className="size-5" /> Mock Interview</div>
           <ChevronRight className="size-4 group-hover:translate-x-1 transition-transform" />
         </Link>
-        <Link href={`/dashboard/global-repo?company=${encodeURIComponent(profile.name)}`} className="group flex items-center justify-between p-4 rounded-2xl bg-white/10 border border-white/10 hover:bg-white/20 font-bold transition-all shadow-sm">
+        <Link href={`/dashboard/experiences?company=${encodeURIComponent(profile.name)}`} className="group flex items-center justify-between p-4 rounded-2xl bg-white/10 border border-white/10 hover:bg-white/20 font-bold transition-all shadow-sm">
           <div className="flex items-center gap-2"><MessageSquare className="size-5 text-blue-500" /> View Questions</div>
           <ChevronRight className="size-4 group-hover:translate-x-1 transition-transform" />
         </Link>

@@ -16,7 +16,7 @@ interface CompanyCardProps {
 
 export function CompanyCard({ company }: CompanyCardProps) {
   return (
-    <Link href={`/dashboard/global-repo/${encodeURIComponent(company.name)}`}>
+    <Link href={`/dashboard/experiences/${encodeURIComponent(company.name)}`}>
       <div className="group flex flex-col h-full p-6 space-y-6 border border-white/20 dark:border-white/10 rounded-2xl bg-white/10 dark:bg-black/10 backdrop-blur-xl shadow-clay-sm hover:shadow-clay-md transition-all duration-300 hover:-translate-y-1">
         {/* Header */}
         <div className="flex items-center gap-4">

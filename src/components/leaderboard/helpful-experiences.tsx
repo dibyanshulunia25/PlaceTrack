@@ -24,7 +24,7 @@ export function HelpfulExperiences({ experiences }: { experiences: Experience[] 
 
       <div className="space-y-4 flex-1">
         {experiences.map((exp) => (
-          <Link key={exp.id} href={`/dashboard/global-repo/${encodeURIComponent(exp.company.name)}/${exp.id}`}>
+          <Link key={exp.id} href={`/dashboard/experiences/${encodeURIComponent(exp.company.name)}/${exp.id}`}>
             <div className="p-4 rounded-2xl bg-white/20 dark:bg-white/5 border border-white/10 shadow-sm hover:shadow-clay-sm transition-all group mb-4">
               <h3 className="font-bold line-clamp-2 group-hover:text-primary transition-colors mb-2">
                 {exp.title}

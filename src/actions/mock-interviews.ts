@@ -178,13 +178,29 @@ export async function getSmartRecommendations() {
       take: 20
     })
 
+    const totalQuestions = await prisma.mockQuestion.count({
+      where: { 
+        companyId: app.companyId,
+        OR: [{ isPublic: true }, { userId }]
+      }
+    })
+
+    const sessionsAggr = await prisma.practiceSession.aggregate({
+      where: { userId, companyId: app.companyId },
+      _sum: { score: true }
+    })
+    
+    const totalPracticed = sessionsAggr._sum.score || 0
+
     const topics = new Set<string>()
     questions.forEach(q => q.tags.forEach(t => topics.add(t)))
 
     return {
       application: app,
       recommendedQuestions: questions,
-      topics: Array.from(topics).slice(0, 5)
+      topics: Array.from(topics).slice(0, 5),
+      totalQuestions,
+      totalPracticed
     }
   }))
 

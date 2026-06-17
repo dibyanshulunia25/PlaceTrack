@@ -31,11 +31,7 @@ export const dashboardLinks = [
     href: '/dashboard/leaderboard',
     icon: Trophy,
   },
-  {
-    title: 'Global Repo',
-    href: '/dashboard/global-repo',
-    icon: Globe,
-  },
+
   {
     title: 'Discovery Engine',
     href: '/dashboard/resources',

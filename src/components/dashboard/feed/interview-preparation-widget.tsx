@@ -47,15 +47,30 @@ export async function InterviewPreparationWidget() {
 
               <div className="mt-3">
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="font-semibold text-muted-foreground">Preparation Status</span>
-                  <span className="font-bold text-emerald-500">Active</span>
+                  <span className="font-semibold text-muted-foreground">
+                    Preparation Status
+                  </span>
+                  <span className="font-bold text-emerald-500">
+                    {rec.totalQuestions > 0 
+                      ? `${Math.min(100, Math.round((rec.totalPracticed / rec.totalQuestions) * 100))}%` 
+                      : "0%"}
+                  </span>
                 </div>
-                <div className="w-full bg-black/10 rounded-full h-1.5 mb-3">
-                  <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: '45%' }}></div>
+                <div className="w-full bg-black/10 rounded-full h-1.5 mb-2">
+                  <div 
+                    className="bg-emerald-500 h-1.5 rounded-full transition-all duration-1000 ease-out" 
+                    style={{ 
+                      width: `${rec.totalQuestions > 0 ? Math.min(100, Math.round((rec.totalPracticed / rec.totalQuestions) * 100)) : 0}%` 
+                    }}
+                  ></div>
+                </div>
+                <div className="text-[10px] text-muted-foreground flex justify-between">
+                  <span>{rec.totalPracticed} practiced</span>
+                  <span>{rec.totalQuestions} total</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center justify-between mt-3">
                 <span className="text-xs font-semibold text-muted-foreground bg-background/50 px-2 py-1 rounded">
                   {rec.recommendedQuestions.length} Recommended
                 </span>

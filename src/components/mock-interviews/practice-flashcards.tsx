@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { BrainCircuit, CheckCircle2, XCircle, RotateCcw, Building2, HelpCircle } from "lucide-react"
+import { BrainCircuit, CheckCircle2, XCircle, RotateCcw, Building2, HelpCircle, Loader2 } from "lucide-react"
+import { savePracticeSession } from "@/actions/mock-interviews"
 
 // For simplicity, we fetch the questions in a useEffect or we can pass them in from a server component wrapper.
 // Since we want this to be client side, let's just make the page a wrapper and pass questions.
@@ -28,9 +29,19 @@ export function PracticeFlashcards({ questions, companyName }: { questions: any[
     }
   }
 
-  const handleFinish = () => {
-    // Ideally call the server action `savePracticeSession` here
-    router.push(`/dashboard/mock-interviews/${encodeURIComponent(companyName)}`)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleFinish = async () => {
+    setIsSubmitting(true)
+    try {
+      const companyId = questions.length > 0 ? questions[0].companyId : undefined
+      await savePracticeSession({ companyId, score: questions.length })
+      router.push(`/dashboard/mock-interviews/${encodeURIComponent(companyName)}`)
+    } catch (error) {
+      console.error("Failed to record practice session", error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (questions.length === 0) {
@@ -72,8 +83,10 @@ export function PracticeFlashcards({ questions, companyName }: { questions: any[
           </button>
           <button 
             onClick={handleFinish}
-            className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-colors font-medium shadow-md"
+            disabled={isSubmitting}
+            className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-colors font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
+            {isSubmitting ? <Loader2 className="size-5 animate-spin" /> : null}
             Finish & Save
           </button>
         </div>

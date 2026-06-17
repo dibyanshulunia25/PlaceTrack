@@ -41,7 +41,7 @@ export default async function ExperienceDetailsPage({
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <h3 className="mb-2 text-2xl font-bold">Experience Not Found</h3>
         <Link
-          href="/dashboard/global-repo"
+          href="/dashboard/experiences"
           className="text-primary hover:underline"
         >
           Return to Repository
@@ -72,7 +72,7 @@ export default async function ExperienceDetailsPage({
         </div>
         <div>
           <Link
-            href={`/dashboard/global-repo/${encodeURIComponent(experience.company.name)}`}
+            href={`/dashboard/experiences/${encodeURIComponent(experience.company.name)}`}
             className="text-muted-foreground hover:text-primary mb-6 inline-flex items-center text-sm font-medium transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -85,7 +85,7 @@ export default async function ExperienceDetailsPage({
 
           <div className="flex flex-wrap items-center gap-4 text-sm font-medium">
             <Link
-              href={`/dashboard/global-repo/${encodeURIComponent(experience.company.name)}`}
+              href={`/dashboard/experiences/${encodeURIComponent(experience.company.name)}`}
               className="bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors"
             >
               <Building className="size-4" />

@@ -16,7 +16,7 @@ export function PublicExperienceCard({ experience, index }: { experience: any, i
       whileHover={{ y: -5 }}
       className="h-full"
     >
-      <Link href={`/dashboard/global-repo/${encodeURIComponent(experience.company.name)}/${experience.id}`}>
+      <Link href={`/dashboard/experiences/${encodeURIComponent(experience.company.name)}/${experience.id}`}>
         <Card className="bg-white dark:bg-white/5 backdrop-blur-xl border-border/80 dark:border-white/10 shadow-md dark:shadow-none hover:shadow-xl transition-all flex flex-col h-full cursor-pointer">
           <CardHeader className="pb-3">
             <div className="flex gap-4 items-start">

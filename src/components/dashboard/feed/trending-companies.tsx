@@ -38,7 +38,7 @@ export async function TrendingCompanies() {
           })
 
           return (
-            <Link href={`/dashboard/global-repo/${encodeURIComponent(company.name)}`} key={company.id} className="block">
+            <Link href={`/dashboard/experiences/${encodeURIComponent(company.name)}`} key={company.id} className="block">
               <div className="flex items-center justify-between p-3 rounded-xl hover:bg-white/60 dark:hover:bg-white/10 transition-colors border border-transparent hover:border-border/40 group">
                 <div className="flex items-center gap-3">
                   <div className="size-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-bold text-xs group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
