@@ -19,7 +19,11 @@ export async function GET(req: Request) {
   }
 
   try {
-    const today = startOfDay(new Date())
+    // Helper to shift UTC date to IST (UTC+5:30) to prevent day-boundary bugs
+    const getISTDate = (date: Date) => new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+    
+    // Evaluate "today" strictly in IST
+    const today = startOfDay(getISTDate(new Date()));
 
     // 2. Fetch all applications with upcoming/recent events (not rejected/withdrawn/offered)
     const activeApplications = await prisma.application.findMany({
@@ -47,10 +51,10 @@ export async function GET(req: Request) {
       let eventType = "Upcoming Event"
       
       if (app.interviewDate) {
-        eventDate = startOfDay(app.interviewDate)
+        eventDate = startOfDay(getISTDate(app.interviewDate));
         eventType = "Interview"
       } else if (app.assessmentDate) {
-        eventDate = startOfDay(app.assessmentDate)
+        eventDate = startOfDay(getISTDate(app.assessmentDate));
         eventType = "Online Assessment"
       }
 
