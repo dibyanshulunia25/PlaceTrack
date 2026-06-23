@@ -34,7 +34,8 @@ export async function createExperience(rawData: ExperienceFormData) {
   // Extract keywords from questions automatically
   const allQuestionText = [
     ...(data.oaQuestions?.map(q => q.value) || []),
-    ...(data.interviewQuestions?.map(q => q.value) || [])
+    ...(data.technicalQuestions?.map(q => q.value) || []),
+    ...(data.personalQuestions?.map(q => q.value) || [])
   ].join(" ").toLowerCase()
   
   const keywords = ["react", "nextjs", "node", "system design", "dp", "dynamic programming", "graphs", "trees", "greedy", "arrays", "strings", "sliding window", "two pointers", "sql", "dbms", "os", "operating system", "networking", "api", "rest", "graphql", "aws", "docker", "kubernetes", "behavioral", "leadership", "oop"]
@@ -90,12 +91,25 @@ export async function createExperience(rawData: ExperienceFormData) {
     })
   }
 
-  // Create Interview Questions
-  if (data.interviewQuestions && data.interviewQuestions.length > 0) {
+  // Create Technical Interview Questions
+  if (data.technicalQuestions && data.technicalQuestions.length > 0) {
     await prisma.interviewQuestion.createMany({
-      data: data.interviewQuestions.map((q, i) => ({
+      data: data.technicalQuestions.map((q, i) => ({
         experienceId: experience.id,
         questionText: q.value,
+        type: "TECHNICAL",
+        order: i
+      }))
+    })
+  }
+
+  // Create Personal Interview Questions
+  if (data.personalQuestions && data.personalQuestions.length > 0) {
+    await prisma.interviewQuestion.createMany({
+      data: data.personalQuestions.map((q, i) => ({
+        experienceId: experience.id,
+        questionText: q.value,
+        type: "PERSONAL",
         order: i
       }))
     })

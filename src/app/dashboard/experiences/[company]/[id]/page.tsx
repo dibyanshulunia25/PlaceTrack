@@ -60,6 +60,9 @@ export default async function ExperienceDetailsPage({
     orderBy: { createdAt: 'desc' },
   });
 
+  const technicalQs = experience.interviewQuestions.filter(q => q.type === 'TECHNICAL');
+  const personalQs = experience.interviewQuestions.filter(q => q.type === 'PERSONAL');
+
   return (
     <div className="mx-auto max-w-4xl space-y-8 pb-12">
       <div className="flex items-start gap-6">
@@ -173,19 +176,43 @@ export default async function ExperienceDetailsPage({
           </section>
         )}
 
-        {experience.interviewQuestions.length > 0 && (
+        {technicalQs.length > 0 && (
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold tracking-tight">
               <HelpCircle className="size-6 text-purple-500" />
-              Interview Questions
+              Technical Interview
             </h2>
             <div className="space-y-4">
-              {experience.interviewQuestions.map((q, i) => (
+              {technicalQs.map((q, i) => (
                 <div
                   key={q.id}
                   className="prose prose-neutral dark:prose-invert max-w-none rounded-2xl border border-purple-500/20 bg-purple-500/5 p-6 shadow-sm backdrop-blur-xl"
                 >
                   <div className="mb-2 font-semibold text-purple-500">
+                    Question {i + 1}
+                  </div>
+                  <div className="leading-relaxed whitespace-pre-wrap">
+                    {q.questionText}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {personalQs.length > 0 && (
+          <section>
+            <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold tracking-tight">
+              <UserCircle className="size-6 text-orange-500" />
+              Personal / HR Interview
+            </h2>
+            <div className="space-y-4">
+              {personalQs.map((q, i) => (
+                <div
+                  key={q.id}
+                  className="prose prose-neutral dark:prose-invert max-w-none rounded-2xl border border-orange-500/20 bg-orange-500/5 p-6 shadow-sm backdrop-blur-xl"
+                >
+                  <div className="mb-2 font-semibold text-orange-500">
                     Question {i + 1}
                   </div>
                   <div className="leading-relaxed whitespace-pre-wrap">

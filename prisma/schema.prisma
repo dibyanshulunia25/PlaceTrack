@@ -180,6 +180,7 @@ model InterviewQuestion {
   id           String     @id @default(cuid())
   experienceId String
   questionText String     @db.Text
+  type         String     @default("TECHNICAL")
   order        Int        @default(0)
   createdAt    DateTime   @default(now())
 

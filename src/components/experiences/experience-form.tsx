@@ -29,7 +29,8 @@ export function ExperienceForm({ onSuccess }: { onSuccess?: () => void }) {
       difficulty: 3,
       content: "",
       oaQuestions: [],
-      interviewQuestions: [],
+      technicalQuestions: [],
+      personalQuestions: [],
       tips: "",
       tags: "",
       isPublic: true,
@@ -47,11 +48,18 @@ export function ExperienceForm({ onSuccess }: { onSuccess?: () => void }) {
   } = useFieldArray({ control, name: "oaQuestions" as never }) // Type casting because useFieldArray string array issues
 
   const {
-    fields: interviewFields,
-    append: appendInterview,
-    remove: removeInterview,
-    move: moveInterview,
-  } = useFieldArray({ control, name: "interviewQuestions" as never })
+    fields: technicalFields,
+    append: appendTechnical,
+    remove: removeTechnical,
+    move: moveTechnical,
+  } = useFieldArray({ control, name: "technicalQuestions" as never })
+
+  const {
+    fields: personalFields,
+    append: appendPersonal,
+    remove: removePersonal,
+    move: movePersonal,
+  } = useFieldArray({ control, name: "personalQuestions" as never })
 
   const onSubmit = (data: ExperienceFormData) => {
     setError(null)
@@ -170,14 +178,14 @@ export function ExperienceForm({ onSuccess }: { onSuccess?: () => void }) {
 
       <div className="space-y-4 p-4 rounded-xl bg-purple-500/5 border border-purple-500/20">
         <div className="flex items-center justify-between">
-          <Label className="text-purple-600 dark:text-purple-400 font-bold">Interview Questions</Label>
-          <Button type="button" variant="outline" size="sm" onClick={() => appendInterview({ value: "" })} className="h-8 border-purple-500/30 text-purple-600 hover:bg-purple-500/10">
+          <Label className="text-purple-600 dark:text-purple-400 font-bold">Technical Interview Questions</Label>
+          <Button type="button" variant="outline" size="sm" onClick={() => appendTechnical({ value: "" })} className="h-8 border-purple-500/30 text-purple-600 hover:bg-purple-500/10">
             <Plus className="size-4 mr-1" /> Add Question
           </Button>
         </div>
         <div className="space-y-3">
           <AnimatePresence>
-            {interviewFields.map((field, index) => (
+            {technicalFields.map((field, index) => (
               <motion.div 
                 key={field.id}
                 initial={{ opacity: 0, height: 0 }}
@@ -186,28 +194,72 @@ export function ExperienceForm({ onSuccess }: { onSuccess?: () => void }) {
                 className="flex items-start gap-2"
               >
                 <div className="flex flex-col gap-1 mt-2">
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={() => index > 0 && moveInterview(index, index - 1)} disabled={index === 0}>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={() => index > 0 && moveTechnical(index, index - 1)} disabled={index === 0}>
                     <ArrowUp className="size-3" />
                   </Button>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={() => index < interviewFields.length - 1 && moveInterview(index, index + 1)} disabled={index === interviewFields.length - 1}>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={() => index < technicalFields.length - 1 && moveTechnical(index, index + 1)} disabled={index === technicalFields.length - 1}>
                     <ArrowDown className="size-3" />
                   </Button>
                 </div>
                 <div className="flex-1">
                   <Textarea 
-                    placeholder={`Question ${index + 1}`} 
+                    placeholder={`Technical Question ${index + 1}`} 
                     className="min-h-[60px] resize-y bg-white/50 dark:bg-black/20 focus-visible:ring-purple-500"
-                    {...register(`interviewQuestions.${index}.value` as any)}
+                    {...register(`technicalQuestions.${index}.value` as any)}
                   />
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => removeInterview(index)} className="mt-2 text-destructive hover:bg-destructive/10">
+                <Button type="button" variant="ghost" size="icon" onClick={() => removeTechnical(index)} className="mt-2 text-destructive hover:bg-destructive/10">
                   <Trash2 className="size-4" />
                 </Button>
               </motion.div>
             ))}
           </AnimatePresence>
-          {interviewFields.length === 0 && (
-            <p className="text-sm text-muted-foreground italic">No interview questions added yet.</p>
+          {technicalFields.length === 0 && (
+            <p className="text-sm text-muted-foreground italic">No technical questions added yet.</p>
+          )}
+        </div>
+      </div>
+
+      <div className="space-y-4 p-4 rounded-xl bg-orange-500/5 border border-orange-500/20">
+        <div className="flex items-center justify-between">
+          <Label className="text-orange-600 dark:text-orange-400 font-bold">Personal / HR Interview Questions</Label>
+          <Button type="button" variant="outline" size="sm" onClick={() => appendPersonal({ value: "" })} className="h-8 border-orange-500/30 text-orange-600 hover:bg-orange-500/10">
+            <Plus className="size-4 mr-1" /> Add Question
+          </Button>
+        </div>
+        <div className="space-y-3">
+          <AnimatePresence>
+            {personalFields.map((field, index) => (
+              <motion.div 
+                key={field.id}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="flex items-start gap-2"
+              >
+                <div className="flex flex-col gap-1 mt-2">
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={() => index > 0 && movePersonal(index, index - 1)} disabled={index === 0}>
+                    <ArrowUp className="size-3" />
+                  </Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={() => index < personalFields.length - 1 && movePersonal(index, index + 1)} disabled={index === personalFields.length - 1}>
+                    <ArrowDown className="size-3" />
+                  </Button>
+                </div>
+                <div className="flex-1">
+                  <Textarea 
+                    placeholder={`Personal / HR Question ${index + 1}`} 
+                    className="min-h-[60px] resize-y bg-white/50 dark:bg-black/20 focus-visible:ring-orange-500"
+                    {...register(`personalQuestions.${index}.value` as any)}
+                  />
+                </div>
+                <Button type="button" variant="ghost" size="icon" onClick={() => removePersonal(index)} className="mt-2 text-destructive hover:bg-destructive/10">
+                  <Trash2 className="size-4" />
+                </Button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {personalFields.length === 0 && (
+            <p className="text-sm text-muted-foreground italic">No personal questions added yet.</p>
           )}
         </div>
       </div>
