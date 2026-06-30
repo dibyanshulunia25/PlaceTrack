@@ -11,6 +11,7 @@ import {
   Lightbulb,
   Code2,
   HelpCircle,
+  Pencil,
 } from 'lucide-react';
 import { StarRating } from '@/components/experiences/star-rating';
 import { VoteButtons } from '@/components/experiences/vote-buttons';
@@ -73,14 +74,26 @@ export default async function ExperienceDetailsPage({
             initialUserVote={experience.votes?.[0]?.value}
           />
         </div>
-        <div>
-          <Link
-            href={`/dashboard/experiences/${encodeURIComponent(experience.company.name)}`}
-            className="text-muted-foreground hover:text-primary mb-6 inline-flex items-center text-sm font-medium transition-colors"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to {experience.company.name}
-          </Link>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-6">
+            <Link
+              href={`/dashboard/experiences/${encodeURIComponent(experience.company.name)}`}
+              className="text-muted-foreground hover:text-primary inline-flex items-center text-sm font-medium transition-colors"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to {experience.company.name}
+            </Link>
+
+            {experience.userId === user.id && (
+              <Link
+                href={`/dashboard/experiences/${encodeURIComponent(experience.company.name)}/${experience.id}/edit`}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors shadow-sm"
+              >
+                <Pencil className="h-4 w-4" />
+                Edit Experience
+              </Link>
+            )}
+          </div>
 
           <h1 className="mb-4 text-4xl leading-tight font-extrabold tracking-tight">
             {experience.title}

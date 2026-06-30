@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { createExperience, ExperienceFormData } from "@/actions/experiences"
-import { useState, useTransition } from "react"
+import { createExperience, updateExperience, ExperienceFormData } from "@/actions/experiences"
+import { useState, useTransition, useEffect } from "react"
 import { Loader2, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react"
 import { StarRating } from "./star-rating"
 import { useRouter } from "next/navigation"
@@ -14,14 +14,22 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ExperienceSchema } from "@/lib/validations"
 import { motion, AnimatePresence } from "framer-motion"
 
-export function ExperienceForm({ onSuccess }: { onSuccess?: () => void }) {
+export function ExperienceForm({ 
+  onSuccess,
+  experienceId,
+  initialData 
+}: { 
+  onSuccess?: () => void;
+  experienceId?: string;
+  initialData?: Partial<ExperienceFormData>;
+}) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const form = useForm<ExperienceFormData>({
     resolver: zodResolver(ExperienceSchema) as any,
-    defaultValues: {
+    defaultValues: initialData || {
       companyName: "",
       role: "",
       title: "",
@@ -65,14 +73,18 @@ export function ExperienceForm({ onSuccess }: { onSuccess?: () => void }) {
     setError(null)
     startTransition(async () => {
       try {
-        await createExperience(data)
+        if (experienceId) {
+          await updateExperience(experienceId, data)
+        } else {
+          await createExperience(data)
+        }
         if (onSuccess) {
           onSuccess()
         } else {
-          router.push("/dashboard/experiences")
+          router.push(experienceId ? `/dashboard/experiences/${encodeURIComponent(data.companyName)}/${experienceId}` : "/dashboard/experiences")
         }
       } catch (err: any) {
-        setError(err.message || "Failed to create experience")
+        setError(err.message || "Failed to save experience")
       }
     })
   }
@@ -293,10 +305,10 @@ export function ExperienceForm({ onSuccess }: { onSuccess?: () => void }) {
         {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Posting...
+            {experienceId ? "Updating..." : "Posting..."}
           </>
         ) : (
-          "Share Experience"
+          experienceId ? "Update Experience" : "Share Experience"
         )}
       </Button>
     </form>

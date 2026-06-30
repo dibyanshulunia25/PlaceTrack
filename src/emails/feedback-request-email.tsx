@@ -36,7 +36,7 @@ export function FeedbackRequestEmail({
       <Section className="text-center mt-[32px] mb-[32px]">
         <Button 
           className="bg-[#2563eb] rounded-lg text-white text-[14px] font-semibold no-underline text-center px-6 py-3 shadow-md border-b-[3px] border-[#1d4ed8]"
-          href={`https://place-track-two.vercel.app/experiences/new`}
+          href={`https://place-track-two.vercel.app/dashboard/experiences/new`}
         >
           Share Your Experience
         </Button>

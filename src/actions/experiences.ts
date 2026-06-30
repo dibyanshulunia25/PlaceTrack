@@ -119,3 +119,122 @@ export async function createExperience(rawData: ExperienceFormData) {
   revalidatePath("/experiences")
   return experience
 }
+
+export async function updateExperience(experienceId: string, rawData: ExperienceFormData) {
+  const user = await currentUser()
+  if (!user) throw new Error("Unauthorized")
+  const userId = user.id
+
+  const existingExperience = await prisma.experience.findUnique({
+    where: { id: experienceId }
+  })
+
+  if (!existingExperience) {
+    throw new Error("Experience not found")
+  }
+
+  if (existingExperience.userId !== userId) {
+    throw new Error("Unauthorized to edit this experience")
+  }
+
+  const validatedData = ExperienceSchema.safeParse(rawData)
+
+  if (!validatedData.success) {
+    throw new Error(validatedData.error.issues[0].message)
+  }
+
+  const data = validatedData.data
+  const manualTags = data.tags ? data.tags.split(",").map(t => t.trim()).filter(Boolean) : []
+  
+  const allQuestionText = [
+    ...(data.oaQuestions?.map(q => q.value) || []),
+    ...(data.technicalQuestions?.map(q => q.value) || []),
+    ...(data.personalQuestions?.map(q => q.value) || [])
+  ].join(" ").toLowerCase()
+  
+  const keywords = ["react", "nextjs", "node", "system design", "dp", "dynamic programming", "graphs", "trees", "greedy", "arrays", "strings", "sliding window", "two pointers", "sql", "dbms", "os", "operating system", "networking", "api", "rest", "graphql", "aws", "docker", "kubernetes", "behavioral", "leadership", "oop"]
+  const autoTags = keywords.filter(k => allQuestionText.includes(k)).map(k => {
+    if (k === "dp") return "DP"
+    if (k === "sql") return "SQL"
+    if (k === "dbms") return "DBMS"
+    if (k === "os") return "OS"
+    if (k === "oop") return "OOP"
+    if (k === "aws") return "AWS"
+    if (k === "api") return "API"
+    if (k === "rest") return "REST"
+    return k.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+  })
+
+  const tags = Array.from(new Set([...manualTags, ...autoTags]))
+
+  let company = await prisma.company.findFirst({
+    where: { name: { equals: data.companyName, mode: 'insensitive' } }
+  })
+
+  if (!company) {
+    company = await prisma.company.create({
+      data: { name: data.companyName }
+    })
+  }
+
+  const experience = await prisma.experience.update({
+    where: { id: experienceId },
+    data: {
+      title: data.title,
+      role: data.role,
+      content: data.content,
+      tips: data.tips,
+      tags,
+      difficulty: data.difficulty,
+      year: data.year,
+      isPublic: data.isPublic,
+      isAnonymous: data.isAnonymous,
+      companyId: company.id,
+    }
+  })
+
+  await prisma.assessmentQuestion.deleteMany({
+    where: { experienceId }
+  })
+  
+  await prisma.interviewQuestion.deleteMany({
+    where: { experienceId }
+  })
+
+  if (data.oaQuestions && data.oaQuestions.length > 0) {
+    await prisma.assessmentQuestion.createMany({
+      data: data.oaQuestions.map((q, i) => ({
+        experienceId: experience.id,
+        questionText: q.value,
+        order: i
+      }))
+    })
+  }
+
+  if (data.technicalQuestions && data.technicalQuestions.length > 0) {
+    await prisma.interviewQuestion.createMany({
+      data: data.technicalQuestions.map((q, i) => ({
+        experienceId: experience.id,
+        questionText: q.value,
+        type: "TECHNICAL",
+        order: i
+      }))
+    })
+  }
+
+  if (data.personalQuestions && data.personalQuestions.length > 0) {
+    await prisma.interviewQuestion.createMany({
+      data: data.personalQuestions.map((q, i) => ({
+        experienceId: experience.id,
+        questionText: q.value,
+        type: "PERSONAL",
+        order: i
+      }))
+    })
+  }
+
+  revalidatePath(`/dashboard/experiences/${encodeURIComponent(company.name)}/${experienceId}`)
+  revalidatePath("/dashboard/experiences")
+  revalidatePath("/experiences")
+  return experience
+}
