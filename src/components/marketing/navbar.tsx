@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { motion } from "framer-motion"
 import { UserButton, useAuth } from "@clerk/nextjs"
+import Image from "next/image"
 
 export function Navbar() {
   const pathname = usePathname()
@@ -30,9 +31,7 @@ export function Navbar() {
       <div className="container flex h-16 items-center mx-auto px-4 md:px-8">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <div className="size-8 rounded-xl bg-primary shadow-clay-inset flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl leading-none">P</span>
-            </div>
+            <Image src="/icon.png" alt="PlaceTrack Logo" width={40} height={40} className="rounded-xl shadow-clay-inset object-cover w-10 h-10" />
             <span className="hidden font-bold sm:inline-block text-xl tracking-tight">
               PlaceTrack
             </span>
@@ -55,9 +54,7 @@ export function Navbar() {
         
         {/* Mobile Nav could go here */}
         <Link href="/" className="mr-6 flex items-center space-x-2 md:hidden">
-          <div className="size-8 rounded-xl bg-primary shadow-clay-inset flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-xl leading-none">P</span>
-          </div>
+          <Image src="/icon.png" alt="PlaceTrack Logo" width={40} height={40} className="rounded-xl shadow-clay-inset object-cover w-10 h-10" />
           <span className="font-bold inline-block text-xl tracking-tight">
             PlaceTrack
           </span>

@@ -10,6 +10,8 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { ExperienceFilters } from "@/components/experiences/experience-filters"
 
+import Image from 'next/image'
+
 export function MobileNav() {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
@@ -25,9 +27,7 @@ export function MobileNav() {
       <SheetContent side="left" className="w-72 bg-glass backdrop-blur-xl border-r-border p-0">
         <div className="h-16 flex items-center px-6 border-b border-border/50">
           <Link href="/dashboard" className="flex items-center space-x-2" onClick={() => setOpen(false)}>
-            <div className="size-8 rounded-xl bg-primary shadow-clay-inset flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl leading-none">P</span>
-            </div>
+            <Image src="/icon.png" alt="PlaceTrack Logo" width={40} height={40} className="rounded-xl shadow-clay-inset object-cover w-10 h-10" />
             <span className="font-bold text-xl tracking-tight">PlaceTrack</span>
           </Link>
         </div>
