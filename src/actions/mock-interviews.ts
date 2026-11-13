@@ -275,7 +275,14 @@ export async function saveBookmarkNotes(bookmarkId: string, notes: string) {
 
 export async function getUserPracticeAnalytics() {
   const { userId } = await auth()
-  if (!userId) throw new Error("Unauthorized")
+  if (!userId) {
+    return {
+      streak: 0,
+      totalSessions: 0,
+      strongAreas: [],
+      weakAreas: []
+    }
+  }
 
   // Practice Streak Calculation
   const sessions = await prisma.practiceSession.findMany({

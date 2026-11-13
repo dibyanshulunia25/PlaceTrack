@@ -3,12 +3,22 @@ import { Target, ArrowRight, Flame } from "lucide-react"
 import Link from "next/link"
 
 export async function InterviewPreparationWidget() {
-  const [recommendations, analytics] = await Promise.all([
-    getSmartRecommendations(),
-    getUserPracticeAnalytics()
-  ])
+  let recommendations: any[] = []
+  let analytics: any = null
 
-  if (recommendations.length === 0 && analytics.totalSessions === 0) return null
+  try {
+    const [recs, stats] = await Promise.all([
+      getSmartRecommendations(),
+      getUserPracticeAnalytics()
+    ])
+    recommendations = recs || []
+    analytics = stats
+  } catch (error) {
+    console.error("Failed to load interview preparation widget:", error)
+    return null
+  }
+
+  if (!analytics || (recommendations.length === 0 && analytics.totalSessions === 0)) return null
 
   return (
     <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-md rounded-3xl border border-orange-500/20 p-5 shadow-clay-sm relative overflow-hidden">

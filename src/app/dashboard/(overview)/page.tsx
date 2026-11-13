@@ -32,7 +32,12 @@ export default async function DashboardPage() {
   })
 
   // Pre-fetch first batch of community feed experiences on the server
-  const initialExperiences = await fetchFeedExperiences({ page: 1, limit: 10, sort: 'recent' })
+  let initialExperiences: any[] = []
+  try {
+    initialExperiences = await fetchFeedExperiences({ page: 1, limit: 10, sort: 'recent' })
+  } catch (err) {
+    console.error("Failed to pre-fetch feed experiences on dashboard:", err)
+  }
 
   return (
     <div className="flex flex-col space-y-8 pb-12">

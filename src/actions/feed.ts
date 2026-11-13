@@ -26,13 +26,17 @@ export async function fetchFeedExperiences(rawArgs: {
 
   const { userId } = await auth()
   
-  // Rate Limit Search
-  // If user is not logged in, we use a generic fallback string "anonymous" 
-  // In a real app we might pass the IP from a component or headers, but Server Actions don't have direct access to IP natively in all Next.js versions without headers().
-  // We'll limit by userId or 'anonymous'
-  const { success } = await searchLimit.limit(userId || 'anonymous')
-  if (!success) {
-    throw new Error("Search rate limit exceeded. Please slow down your searches.")
+  // Rate Limit Search (fail-open if Redis has connection issues)
+  try {
+    const { success } = await searchLimit.limit(userId || 'anonymous')
+    if (!success) {
+      throw new Error("Search rate limit exceeded. Please slow down your searches.")
+    }
+  } catch (err: any) {
+    if (err?.message?.includes("Search rate limit exceeded")) {
+      throw err
+    }
+    Logger.warning("Upstash Redis rate limiter unreachable, failing open", { error: String(err) })
   }
 
   const where: any = {}
