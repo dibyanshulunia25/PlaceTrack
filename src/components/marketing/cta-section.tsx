@@ -7,7 +7,7 @@ import Link from "next/link"
 
 export function CTASection() {
   return (
-    <section className="py-24 bg-[var(--bg-canvas)] px-4 md:px-8 border-t border-[var(--border-subtle)]">
+    <section className="py-24 bg-transparent px-4 md:px-8 border-t border-[var(--border-subtle)]">
       <SlideUp>
         <div className="container mx-auto rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-[var(--shadow-elevation-card)] p-8 sm:p-12 md:p-16 text-center relative overflow-hidden max-w-5xl">
           <div className="relative z-10 max-w-2xl mx-auto space-y-6">

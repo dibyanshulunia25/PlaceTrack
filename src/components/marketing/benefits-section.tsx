@@ -29,7 +29,7 @@ const WORKFLOW_STEPS = [
 
 export function BenefitsSection() {
   return (
-    <div className="bg-[var(--bg-canvas)]">
+    <div className="bg-transparent">
       {/* Workflow Section */}
       <section id="workflow" className="py-24 border-t border-[var(--border-subtle)]">
         <div className="container mx-auto px-4 md:px-8">
@@ -47,7 +47,7 @@ export function BenefitsSection() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {WORKFLOW_STEPS.map((item, idx) => (
-              <SlideUp key={idx} delay={0.1 * idx}>
+              <SlideUp key={idx} delay={0.1 * idx} className="h-full flex flex-col flex-1">
                 <Card className="p-6 h-full flex flex-col justify-between hover:border-primary/40 transition-colors">
                   <div>
                     <span className="font-mono text-2xl font-black text-primary/80 mb-3 block">

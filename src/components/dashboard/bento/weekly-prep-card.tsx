@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Flame, TrendingUp, Sparkles, Target } from "lucide-react"
+import { Flame, TrendingUp, Target } from "lucide-react"
 import { Card } from "@/components/ui/card"
 
-interface DayActivity {
+export interface DayActivity {
   day: string
   date: string
   count: number
@@ -13,27 +13,43 @@ interface DayActivity {
 
 interface WeeklyPrepCardProps {
   streak?: number
-  totalSolved?: number
+  totalSolvedThisWeek?: number
+  totalSolvedAllTime?: number
   targetPerDay?: number
+  days?: DayActivity[]
 }
 
-const DEFAULT_DAYS: DayActivity[] = [
-  { day: "Mon", date: "Nov 10", count: 4 },
-  { day: "Tue", date: "Nov 11", count: 6 },
-  { day: "Wed", date: "Nov 12", count: 5 },
-  { day: "Thu", date: "Nov 13", count: 8 },
-  { day: "Fri", date: "Nov 14", count: 7, isToday: true },
-  { day: "Sat", date: "Nov 15", count: 3 },
-  { day: "Sun", date: "Nov 16", count: 2 },
+const FALLBACK_DAYS: DayActivity[] = [
+  { day: "Mon", date: "Day 1", count: 0 },
+  { day: "Tue", date: "Day 2", count: 0 },
+  { day: "Wed", date: "Day 3", count: 0 },
+  { day: "Thu", date: "Day 4", count: 0 },
+  { day: "Fri", date: "Day 5", count: 0 },
+  { day: "Sat", date: "Day 6", count: 0 },
+  { day: "Sun", date: "Today", count: 0, isToday: true },
 ]
 
 export function WeeklyPrepCard({
-  streak = 5,
-  totalSolved = 35,
+  streak = 0,
+  totalSolvedThisWeek = 0,
+  totalSolvedAllTime = 0,
   targetPerDay = 5,
+  days = FALLBACK_DAYS,
 }: WeeklyPrepCardProps) {
-  const maxVal = Math.max(...DEFAULT_DAYS.map((d) => d.count), targetPerDay, 10)
+  const targetForWeek = targetPerDay * 7
+  const displayDays = days && days.length === 7 ? days : FALLBACK_DAYS
+  const maxVal = Math.max(...displayDays.map((d) => d.count), targetPerDay, 5)
   const [hoveredDay, setHoveredDay] = React.useState<DayActivity | null>(null)
+
+  const percentComplete = Math.min(100, Math.round((totalSolvedThisWeek / targetForWeek) * 100))
+  const paceStatus =
+    totalSolvedThisWeek >= targetForWeek
+      ? { label: "Goal Reached", class: "text-emerald-600 dark:text-emerald-400 font-bold" }
+      : percentComplete >= 50
+      ? { label: "On Pace", class: "text-primary font-semibold" }
+      : totalSolvedThisWeek > 0
+      ? { label: "In Progress", class: "text-[var(--accent-copper)] font-semibold" }
+      : { label: "Awaiting Practice", class: "text-muted-foreground font-medium" }
 
   return (
     <Card className="p-5 md:p-6 flex flex-col justify-between h-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-[var(--shadow-elevation-card)]">
@@ -50,21 +66,25 @@ export function WeeklyPrepCard({
             </div>
           </div>
 
-          {streak > 0 && (
+          {streak > 0 ? (
             <div className="flex items-center gap-1 text-xs font-bold text-[var(--accent-copper)] bg-[var(--accent-copper)]/10 px-2.5 py-1 rounded-full border border-[var(--accent-copper)]/20 shadow-2xs">
               <Flame className="size-3.5 fill-[var(--accent-copper)]" />
               <span>{streak} Day Streak</span>
             </div>
+          ) : (
+            <span className="text-xs text-muted-foreground font-medium px-2 py-0.5 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
+              Daily Target: {targetPerDay}
+            </span>
           )}
         </div>
 
         {/* Big metric & delta */}
         <div className="flex items-baseline gap-2.5 my-3">
-          <span className="text-3xl font-black tracking-tight text-foreground">{totalSolved}</span>
+          <span className="text-3xl font-black tracking-tight text-foreground">{totalSolvedThisWeek}</span>
           <span className="text-xs font-semibold text-muted-foreground">solved this week</span>
           <span className="inline-flex items-center gap-0.5 text-xs font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-auto">
             <TrendingUp className="size-3" />
-            +18% vs avg
+            {totalSolvedAllTime > 0 ? `${totalSolvedAllTime} all-time` : "Ready to start"}
           </span>
         </div>
       </div>
@@ -77,10 +97,12 @@ export function WeeklyPrepCard({
             <span className="w-2.5 h-[1.5px] bg-[var(--accent-copper)] inline-block" />
             Daily Target: {targetPerDay} questions
           </span>
-          {hoveredDay && (
+          {hoveredDay ? (
             <span className="text-xs font-bold text-foreground">
-              {hoveredDay.day}: <strong className="text-primary">{hoveredDay.count}</strong> solved
+              {hoveredDay.day} ({hoveredDay.date}): <strong className="text-primary">{hoveredDay.count}</strong> solved
             </span>
+          ) : (
+            <span className="text-[11px] text-muted-foreground">Hover bar to inspect</span>
           )}
         </div>
 
@@ -92,13 +114,13 @@ export function WeeklyPrepCard({
             style={{ bottom: `${(targetPerDay / maxVal) * 100}%` }}
           />
 
-          {DEFAULT_DAYS.map((d) => {
-            const heightPercent = Math.max((d.count / maxVal) * 100, 6)
+          {displayDays.map((d) => {
+            const heightPercent = d.count > 0 ? Math.max((d.count / maxVal) * 100, 10) : 6
             const reachedTarget = d.count >= targetPerDay
 
             return (
               <div
-                key={d.day}
+                key={d.day + d.date}
                 onMouseEnter={() => setHoveredDay(d)}
                 onMouseLeave={() => setHoveredDay(null)}
                 className="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer"
@@ -109,10 +131,13 @@ export function WeeklyPrepCard({
                     className="w-full rounded-t-md transition-all duration-300"
                     style={{
                       height: `${heightPercent}%`,
-                      backgroundColor: reachedTarget
-                        ? "var(--accent-primary)"
-                        : "var(--accent-copper)",
-                      opacity: d.isToday ? 1 : 0.85,
+                      backgroundColor:
+                        d.count === 0
+                          ? "var(--border-subtle)"
+                          : reachedTarget
+                          ? "var(--accent-primary)"
+                          : "var(--accent-copper)",
+                      opacity: d.count === 0 ? 0.35 : d.isToday ? 1 : 0.85,
                     }}
                   />
                 </div>
@@ -123,9 +148,9 @@ export function WeeklyPrepCard({
 
         {/* Day Labels */}
         <div className="flex items-center justify-between gap-2 pt-2 text-[11px] font-semibold text-muted-foreground">
-          {DEFAULT_DAYS.map((d) => (
+          {displayDays.map((d) => (
             <div
-              key={d.day}
+              key={d.day + d.date}
               className={`flex-1 text-center transition-colors ${
                 d.isToday ? "text-primary font-bold" : "group-hover:text-foreground"
               }`}
@@ -138,8 +163,10 @@ export function WeeklyPrepCard({
 
       {/* Footer note */}
       <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-muted-foreground">
-        <span>76% of weekly target completed</span>
-        <span className="font-semibold text-primary">On Pace</span>
+        <span>
+          {percentComplete}% of weekly target completed ({totalSolvedThisWeek}/{targetForWeek})
+        </span>
+        <span className={paceStatus.class}>{paceStatus.label}</span>
       </div>
     </Card>
   )

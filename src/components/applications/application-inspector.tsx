@@ -9,6 +9,7 @@ import { updateApplication, deleteApplication } from "@/actions/applications"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { ApplicationForm } from "./application-form"
+import { getStageProgress, CANONICAL_STAGES } from "@/lib/stage-progress"
 import { cn } from "@/lib/utils"
 
 type ApplicationWithCompany = Application & { company: Company }
@@ -19,19 +20,13 @@ interface ApplicationInspectorProps {
   onOpenChange: (open: boolean) => void
 }
 
-const STAGES = [
-  { id: "APPLIED", label: "Applied", step: 1 },
-  { id: "ONLINE_ASSESSMENT", label: "Assessment", step: 2 },
-  { id: "INTERVIEW", label: "Technical", step: 3 },
-  { id: "HR_ROUND", label: "HR / Fit", step: 4 },
-  { id: "OFFERED", label: "Offer", step: 5 },
-]
-
 export function ApplicationInspector({ application, open, onOpenChange }: ApplicationInspectorProps) {
   const [isEditOpen, setIsEditOpen] = React.useState(false)
   const [isPending, startTransition] = React.useTransition()
 
   if (!application) return null
+
+  const progress = getStageProgress(application.status)
 
   const handleQuickStatusChange = (newStatus: ApplicationStatus) => {
     startTransition(async () => {
@@ -64,12 +59,6 @@ export function ApplicationInspector({ application, open, onOpenChange }: Applic
       })
     }
   }
-
-  // Determine current step number
-  let currentStep = 1
-  if (application.status === "ONLINE_ASSESSMENT") currentStep = 2
-  if (application.status === "INTERVIEW") currentStep = 3
-  if (application.status === "OFFERED") currentStep = 5
 
   return (
     <>
@@ -106,22 +95,28 @@ export function ApplicationInspector({ application, open, onOpenChange }: Applic
 
           {/* Inspector Body */}
           <div className="p-6 space-y-6 flex-1">
-            {/* 5-Step Stage Progression */}
+            {/* 4-Step Stage Progression */}
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-foreground uppercase tracking-wider text-[11px]">
                   Stage Progression
                 </span>
-                <span className="font-semibold text-primary">Stage {currentStep} of 5</span>
+                <span className="font-semibold text-primary">
+                  {progress.isRejected
+                    ? "Closed / Rejected"
+                    : progress.isWithdrawn
+                    ? "Withdrawn"
+                    : `Stage ${progress.step} of 4`}
+                </span>
               </div>
 
-              <div className="grid grid-cols-5 gap-1.5 pt-1">
-                {STAGES.map((s) => {
-                  const isCompleted = s.step < currentStep
-                  const isCurrent = s.step === currentStep
+              <div className="grid grid-cols-4 gap-1.5 pt-1">
+                {CANONICAL_STAGES.map((s) => {
+                  const isCompleted = s.step < progress.step
+                  const isCurrent = s.step === progress.step
 
                   return (
-                    <div key={s.id} className="space-y-1.5 text-center">
+                    <div key={s.key} className="space-y-1.5 text-center">
                       <div
                         className={cn(
                           "h-2 rounded-full transition-all",
@@ -140,7 +135,7 @@ export function ApplicationInspector({ application, open, onOpenChange }: Applic
                           isCurrent ? "text-foreground font-bold" : "text-muted-foreground"
                         )}
                       >
-                        {s.label}
+                        {s.shortLabel}
                       </span>
                     </div>
                   )

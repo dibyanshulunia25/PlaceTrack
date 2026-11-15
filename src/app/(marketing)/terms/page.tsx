@@ -14,7 +14,7 @@ export default function TermsPage() {
       </SlideUp>
 
       <SlideUp delay={0.2}>
-        <Card className="mb-12">
+        <Card className="mb-12 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-[var(--shadow-elevation-card)] overflow-hidden">
           <CardContent className="p-8 md:p-12 prose prose-gray dark:prose-invert max-w-none text-muted-foreground leading-relaxed">
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Acceptance of Terms</h2>
             <p className="mb-6">

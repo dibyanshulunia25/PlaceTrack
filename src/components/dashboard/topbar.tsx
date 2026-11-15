@@ -150,7 +150,7 @@ export function Topbar() {
             <span className="relative inline-flex rounded-full size-2 bg-primary"></span>
           </span>
           <span className="text-muted-foreground group-hover:text-foreground transition-colors">
-            <strong className="text-foreground font-semibold">76%</strong> of weekly prep goals completed
+            <strong className="text-foreground font-semibold">Placement Prep</strong> · Goal Velocity Track
           </span>
           <Sparkles className="size-3 text-[var(--accent-copper)] ml-0.5" />
         </Link>

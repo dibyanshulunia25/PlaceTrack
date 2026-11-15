@@ -113,11 +113,13 @@ export function ApplicationsView({ initialApplications }: ApplicationsViewProps)
           selectedId={inspectorOpen ? selectedApp?.id : null}
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch">
           {filteredApps.map((app) => (
-            <div key={app.id} onClick={() => handleSelectApp(app)} className="cursor-pointer">
-              <ApplicationCard application={app} />
-            </div>
+            <ApplicationCard
+              key={app.id}
+              application={app}
+              onInspect={() => handleSelectApp(app)}
+            />
           ))}
         </div>
       )}

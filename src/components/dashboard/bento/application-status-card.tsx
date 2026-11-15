@@ -5,32 +5,14 @@ import Link from "next/link"
 import { Building2, ChevronRight, Calendar, ArrowUpRight, Plus } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { StatusPill } from "@/components/ui/status-pill"
-import { Application, Company, ApplicationStatus } from "@prisma/client"
+import { Application, Company } from "@prisma/client"
+import { getStageProgress } from "@/lib/stage-progress"
 import { cn } from "@/lib/utils"
 
 type ApplicationWithCompany = Application & { company: Company }
 
 interface ApplicationStatusCardProps {
   applications: ApplicationWithCompany[]
-}
-
-// 5-Stage Definition: Applied -> OA -> Tech -> HR -> Offer
-function getStageIndex(status: ApplicationStatus): number {
-  switch (status) {
-    case "APPLIED":
-      return 1
-    case "ONLINE_ASSESSMENT":
-      return 2
-    case "INTERVIEW":
-      return 3 // Technical / Rounds
-    case "OFFERED":
-      return 5
-    case "REJECTED":
-    case "WITHDRAWN":
-      return 1
-    default:
-      return 1
-  }
 }
 
 export function ApplicationStatusCard({ applications }: ApplicationStatusCardProps) {
@@ -75,9 +57,7 @@ export function ApplicationStatusCard({ applications }: ApplicationStatusCardPro
       ) : (
         <div className="divide-y divide-[var(--border-subtle)]">
           {displayApps.map((app) => {
-            const stage = getStageIndex(app.status)
-            const isOffer = app.status === "OFFERED"
-            const isRejected = app.status === "REJECTED"
+            const progress = getStageProgress(app.status)
 
             // Target date text
             let nextDateText = "No date set"
@@ -105,30 +85,27 @@ export function ApplicationStatusCard({ applications }: ApplicationStatusCardPro
                   <p className="text-xs text-muted-foreground truncate mt-0.5">{app.role}</p>
                 </div>
 
-                {/* Center: Visual 5-Step Stage Progress Bar */}
+                {/* Center: Visual 4-Step Stage Progress Bar with exact getStageProgress */}
                 <div className="flex-1 max-w-[200px]">
                   <div className="flex items-center justify-between text-[10px] font-semibold text-muted-foreground mb-1">
-                    <span>Applied</span>
-                    <span className={cn(isOffer && "text-emerald-600 font-bold")}>Offer</span>
+                    <span className={cn(progress.step >= 1 && "text-foreground font-bold")}>Applied</span>
+                    <span className={cn(progress.step >= 2 && "text-foreground font-bold")}>OA</span>
+                    <span className={cn(progress.step >= 3 && "text-foreground font-bold")}>Interview</span>
+                    <span
+                      className={cn(
+                        progress.isOffer && "text-emerald-600 dark:text-emerald-400 font-bold",
+                        progress.isRejected && "text-red-500 font-bold"
+                      )}
+                    >
+                      {progress.isRejected ? "Rejected" : progress.isWithdrawn ? "Withdrawn" : "Offer"}
+                    </span>
                   </div>
-                  <div className="grid grid-cols-5 gap-1">
-                    {[1, 2, 3, 4, 5].map((stepIdx) => {
-                      const isFilled = stepIdx <= stage
-                      return (
-                        <div
-                          key={stepIdx}
-                          className={cn(
-                            "h-1.5 rounded-full transition-all",
-                            isRejected && isFilled
-                              ? "bg-red-500/80"
-                              : isFilled
-                              ? "bg-primary"
-                              : "bg-[var(--bg-elevated)]"
-                          )}
-                          title={`Stage ${stepIdx} of 5`}
-                        />
-                      )
-                    })}
+
+                  <div className="h-1.5 w-full rounded-full bg-[var(--bg-elevated)] overflow-hidden">
+                    <div
+                      className={cn("h-full rounded-full transition-all duration-300", progress.colorClass)}
+                      style={{ width: `${progress.percentage}%` }}
+                    />
                   </div>
                 </div>
 
@@ -154,7 +131,7 @@ export function ApplicationStatusCard({ applications }: ApplicationStatusCardPro
 
       {/* Footer */}
       <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-muted-foreground">
-        <span>Pipeline updated daily from campus portal</span>
+        <span>Pipeline updated directly from application records</span>
         <Link href="/dashboard/applications" className="font-semibold text-primary hover:underline">
           Manage all applications →
         </Link>

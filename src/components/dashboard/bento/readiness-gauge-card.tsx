@@ -1,25 +1,40 @@
 "use client"
 
 import * as React from "react"
-import { BrainCircuit, CheckCircle2, Trophy, ArrowRight } from "lucide-react"
+import { BrainCircuit, Trophy, ArrowRight } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import Link from "next/link"
+
+export interface Competency {
+  name: string
+  score: number
+}
 
 interface ReadinessGaugeCardProps {
   score?: number
   clearedMilestones?: number
   totalMilestones?: number
+  competencies?: Competency[]
 }
 
 export function ReadinessGaugeCard({
-  score = 78,
-  clearedMilestones = 12,
-  totalMilestones = 15,
+  score = 0,
+  clearedMilestones = 0,
+  totalMilestones = 10,
+  competencies = [],
 }: ReadinessGaugeCardProps) {
   // SVG circular calculation
   const radius = 38
   const circumference = 2 * Math.PI * radius
-  const strokeDashoffset = circumference - (score / 100) * circumference
+  const clampedScore = Math.min(100, Math.max(0, score))
+  const strokeDashoffset = circumference - (clampedScore / 100) * circumference
+
+  const confidenceBadge =
+    clampedScore >= 75
+      ? { label: "High Confidence", color: "bg-primary/10 border-primary/20 text-primary" }
+      : clampedScore >= 40
+      ? { label: "Building Pace", color: "bg-[var(--accent-copper)]/10 border-[var(--accent-copper)]/20 text-[var(--accent-copper)]" }
+      : { label: "Initial Phase", color: "bg-[var(--bg-elevated)] border-[var(--border-subtle)] text-muted-foreground" }
 
   return (
     <Card className="p-5 md:p-6 flex flex-col justify-between h-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-[var(--shadow-elevation-card)]">
@@ -35,8 +50,8 @@ export function ReadinessGaugeCard({
               <p className="text-xs text-muted-foreground">Placement preparedness gauge</p>
             </div>
           </div>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary">
-            High Confidence
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${confidenceBadge.color}`}>
+            {confidenceBadge.label}
           </span>
         </div>
 
@@ -70,7 +85,7 @@ export function ReadinessGaugeCard({
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
               <span className="text-2xl font-black text-foreground tracking-tight leading-none">
-                {score}%
+                {clampedScore}%
               </span>
               <span className="text-[10px] uppercase font-bold text-muted-foreground mt-0.5">
                 Ready
@@ -84,42 +99,44 @@ export function ReadinessGaugeCard({
               <span>{clearedMilestones} of {totalMilestones} Milestones</span>
             </div>
             <p className="text-[11px] text-muted-foreground leading-snug">
-              Based on completed mock question banks, OA test passes, and resume reviews.
+              Computed from completed practice questions, active pipeline stages, and streak continuity.
             </p>
           </div>
         </div>
 
         {/* Competency breakdown */}
         <div className="space-y-2 pt-2 border-t border-[var(--border-subtle)] text-xs">
-          <div>
-            <div className="flex justify-between text-[11px] text-muted-foreground mb-1 font-medium">
-              <span>Data Structures & Algorithms</span>
-              <span className="font-bold text-foreground">88%</span>
+          {competencies.length > 0 ? (
+            competencies.map((comp, idx) => (
+              <div key={comp.name || idx}>
+                <div className="flex justify-between text-[11px] text-muted-foreground mb-1 font-medium">
+                  <span className="truncate">{comp.name}</span>
+                  <span className="font-bold text-foreground">{comp.score}%</span>
+                </div>
+                <div className="h-1.5 w-full rounded-full bg-[var(--bg-elevated)] overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${idx === 0 ? "bg-primary" : "bg-[var(--accent-copper)]"}`}
+                    style={{ width: `${Math.min(100, Math.max(0, comp.score))}%` }}
+                  />
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="py-2 text-center text-[11px] text-muted-foreground">
+              Complete mock interview questions to calibrate your competency breakdown.
             </div>
-            <div className="h-1.5 w-full rounded-full bg-[var(--bg-elevated)] overflow-hidden">
-              <div className="h-full bg-primary rounded-full w-[88%]" />
-            </div>
-          </div>
-          <div>
-            <div className="flex justify-between text-[11px] text-muted-foreground mb-1 font-medium">
-              <span>System Design & OS</span>
-              <span className="font-bold text-foreground">72%</span>
-            </div>
-            <div className="h-1.5 w-full rounded-full bg-[var(--bg-elevated)] overflow-hidden">
-              <div className="h-full bg-[var(--accent-copper)] rounded-full w-[72%]" />
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
       {/* Footer */}
       <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">Calibrated daily</span>
+        <span className="text-muted-foreground">Calibrated live</span>
         <Link
           href="/dashboard/mock-interviews"
           className="font-semibold text-primary inline-flex items-center gap-1 hover:underline"
         >
-          <span>Run Calibration</span>
+          <span>Continue Practice</span>
           <ArrowRight className="size-3" />
         </Link>
       </div>

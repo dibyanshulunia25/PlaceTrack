@@ -14,7 +14,7 @@ export default function AboutPage() {
       </SlideUp>
 
       <SlideUp delay={0.2}>
-        <Card className="mb-12">
+        <Card className="mb-12 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-[var(--shadow-elevation-card)] overflow-hidden">
           <CardContent className="p-8 md:p-12 prose prose-gray dark:prose-invert max-w-none">
             <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
             <p className="text-muted-foreground leading-relaxed mb-6">

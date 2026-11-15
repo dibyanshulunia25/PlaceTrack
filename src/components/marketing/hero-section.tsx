@@ -9,7 +9,7 @@ import { InteractiveHeroPreview } from "./interactive-hero-preview"
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-[var(--bg-canvas)] pt-20 pb-28 md:pt-24 md:pb-36">
+    <section className="relative overflow-hidden bg-transparent pt-20 pb-28 md:pt-24 md:pb-36">
       {/* Living Interactive Career Trajectory Canvas */}
       <CareerTrajectoryCanvas />
 
@@ -31,7 +31,7 @@ export function HeroSection() {
         <SlideUp delay={0.15} className="max-w-4xl">
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-foreground mb-6 leading-[1.08]">
             Master your placement journey with{" "}
-            <span className="text-primary underline decoration-[var(--accent-copper)]/60 decoration-wavy decoration-2">
+            <span className="text-primary">
               PlaceTrack
             </span>
           </h1>

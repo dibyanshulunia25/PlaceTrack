@@ -11,7 +11,7 @@ export default function DashboardLayout({
 }) {
   return (
     <SidebarProvider>
-      <div className="relative min-h-screen w-full bg-[var(--bg-canvas)] text-foreground selection:bg-primary/20 overflow-x-hidden">
+      <div className="relative min-h-screen w-full bg-[var(--bg-canvas)] text-foreground selection:bg-primary/20 overflow-x-clip">
         {/* Living Interactive Backdrop */}
         <InteractiveAppBackdrop />
 
