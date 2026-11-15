@@ -1,137 +1,135 @@
 import { prisma } from "@/lib/prisma"
-import { PublicExperienceCard } from "@/components/experiences/public-experience-card"
 import { redirect } from "next/navigation"
 import { currentUser } from "@clerk/nextjs/server"
-import { PaginationWrapper } from "@/components/experiences/pagination-wrapper"
-import { EmptyState } from "@/components/ui/empty-state"
-import { Search } from "lucide-react"
-import { ExperienceFilters } from "@/components/experiences/experience-filters"
-import { Suspense } from "react"
-import { ExperiencesNavigation } from "@/components/experiences/experiences-navigation"
+import { formatDistanceToNow, format } from "date-fns"
+import Link from "next/link"
+import { Plus } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/page-header"
+import { ExperiencesNavigation } from "@/components/experiences/experiences-navigation"
+import { CompanyExperiencesHub } from "@/components/experiences/company-experiences-hub"
+import { CompanyExperienceCardData } from "@/components/experiences/company-experience-card"
 
-export default async function ExperiencesRepository({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
+export const dynamic = "force-dynamic"
+
+export default async function ExperiencesRepository() {
   const user = await currentUser()
   if (!user) redirect("/sign-in")
-  
-  const params = await searchParams
 
-  const page = typeof params.page === 'string' ? parseInt(params.page) : 1
-  const limit = 12
-  
-  const search = typeof params.search === 'string' ? params.search : undefined
-  const company = typeof params.company === 'string' ? params.company : undefined
-  const role = typeof params.role === 'string' ? params.role : undefined
-  const year = typeof params.year === 'string' ? parseInt(params.year) : undefined
-  const difficulty = typeof params.difficulty === 'string' ? parseInt(params.difficulty) : undefined
-  const sort = typeof params.sort === 'string' ? params.sort : 'recent'
-
-  let orderBy: any = { createdAt: 'desc' }
-  if (sort === 'trending') {
-    orderBy = [{ upvotes: 'desc' }, { createdAt: 'desc' }]
-  } else if (sort === 'helpful') {
-    orderBy = { upvotes: 'desc' }
-  }
-
-  // Helper to format query for Postgres FTS tsquery
-  const formatSearchQuery = (query: string) => {
-    return query.trim().split(/\s+/).join(' | ')
-  }
-
-  const whereClause: any = {}
-  
-  if (search) {
-    const formattedSearch = formatSearchQuery(search)
-    whereClause.OR = [
-      { title: { search: formattedSearch } },
-      { content: { search: formattedSearch } },
-      { role: { search: formattedSearch } },
-      { company: { is: { name: { search: formattedSearch } } } },
-      { tags: { hasSome: search.split(/\s+/) } },
-      { assessmentQuestions: { some: { questionText: { search: formattedSearch } } } },
-      { interviewQuestions: { some: { questionText: { search: formattedSearch } } } }
-    ]
-    
-    // Also extract year if a 4-digit number is present
-    const yearMatch = search.match(/\b(20\d{2})\b/)
-    if (yearMatch) {
-      whereClause.OR.push({ year: parseInt(yearMatch[1]) })
-    }
-  }
-  
-  if (company) {
-    whereClause.company = { is: { name: { search: formatSearchQuery(company) } } }
-  }
-  
-  if (role) {
-    whereClause.role = { search: formatSearchQuery(role) }
-  }
-  
-  if (year) {
-    whereClause.year = year
-  }
-  
-  if (difficulty) {
-    whereClause.difficulty = difficulty
-  }
-
-  const [experiences, total] = await Promise.all([
+  // 1. Fetch all companies that have at least one shared experience
+  const [companiesWithExperiences, allExperiences] = await Promise.all([
+    prisma.company.findMany({
+      where: {
+        experiences: { some: {} },
+      },
+      include: {
+        experiences: {
+          select: {
+            id: true,
+            role: true,
+            difficulty: true,
+            createdAt: true,
+            assessmentQuestions: { select: { id: true } },
+            interviewQuestions: { select: { id: true } },
+          },
+          orderBy: { createdAt: "desc" },
+        },
+      },
+      orderBy: { name: "asc" },
+    }),
+    // 2. Fetch all individual experiences for the optional flat timeline feed
     prisma.experience.findMany({
-      where: whereClause,
       include: {
         company: true,
         user: true,
         votes: { where: { userId: user.id } },
       },
-      orderBy,
-      skip: (page - 1) * limit,
-      take: limit,
+      orderBy: { createdAt: "desc" },
+      take: 48,
     }),
-    prisma.experience.count({ where: whereClause })
   ])
 
-  const totalPages = Math.ceil(total / limit)
+  // Compute aggregated card data per company
+  const companyCards: CompanyExperienceCardData[] = companiesWithExperiences.map((comp) => {
+    const exps = comp.experiences
+    const totalExp = exps.length
+
+    // Average difficulty
+    const totalDiff = exps.reduce((acc, e) => acc + (e.difficulty || 0), 0)
+    const avgDiff = totalExp > 0 ? totalDiff / totalExp : 0
+
+    // Common role tags
+    const roleCounts: Record<string, number> = {}
+    exps.forEach((e) => {
+      const r = (e.role || "General").trim()
+      roleCounts[r] = (roleCounts[r] || 0) + 1
+    })
+    const commonRoles = Object.entries(roleCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([role]) => role)
+
+    // Total questions documented
+    let totalQuestions = 0
+    exps.forEach((e) => {
+      totalQuestions += e.assessmentQuestions.length
+      totalQuestions += e.interviewQuestions.length
+    })
+
+    // Latest submission text
+    let latestSubmissionText = "Recently"
+    if (exps[0]?.createdAt) {
+      try {
+        latestSubmissionText = formatDistanceToNow(new Date(exps[0].createdAt), { addSuffix: true })
+      } catch {
+        latestSubmissionText = format(new Date(exps[0].createdAt), "MMM d, yyyy")
+      }
+    }
+
+    return {
+      id: comp.id,
+      name: comp.name,
+      logo: comp.logo,
+      industry: comp.industry,
+      totalExperiences: totalExp,
+      totalQuestions,
+      avgDifficulty: avgDiff,
+      commonRoles,
+      latestSubmissionText,
+    }
+  })
+
+  // Sort by total experiences descending by default
+  companyCards.sort((a, b) => b.totalExperiences - a.totalExperiences)
+
+  const totalSubmissions = allExperiences.length
 
   return (
-    <div className="flex flex-col space-y-6 animate-in fade-in duration-500">
+    <div className="flex flex-col space-y-6 pb-12 animate-page-enter">
       <ExperiencesNavigation />
-      <div className="flex flex-col space-y-6">
-        <PageHeader
-          title="Experience Repository"
-          subtitle={`Browse ${total} verified candidate interview and assessment experiences from the community.`}
-          badge={
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary">
-              {total} Submissions
-            </span>
-          }
-        />
 
-        <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-2xl"></div>}>
-          <ExperienceFilters />
-        </Suspense>
+      <PageHeader
+        title="Experience Repository"
+        subtitle={`Browse candidate interview and OA debriefs grouped by company, with real questions and difficulty ratings.`}
+        badge={
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary">
+            {totalSubmissions} Submissions · {companyCards.length} Companies
+          </span>
+        }
+        actions={
+          <Link
+            href="/dashboard/experiences/new"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-[var(--accent-primary-hover)] text-primary-foreground shadow-2xs transition-colors"
+          >
+            <Plus className="size-3.5" />
+            <span>Share Experience</span>
+          </Link>
+        }
+      />
 
-        {experiences.length === 0 ? (
-          <EmptyState
-            icon={Search}
-            title="No experiences found"
-            description="Try adjusting your filters to find what you're looking for."
-          />
-        ) : (
-          <>
-            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-              {experiences.map((exp, i) => (
-                <PublicExperienceCard key={exp.id} experience={exp} index={i} />
-              ))}
-            </div>
-            
-            <PaginationWrapper currentPage={page} totalPages={totalPages} />
-          </>
-        )}
-      </div>
+      <CompanyExperiencesHub
+        companies={companyCards}
+        allExperiences={allExperiences}
+      />
     </div>
   )
 }
