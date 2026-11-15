@@ -8,6 +8,7 @@ import { Search } from "lucide-react"
 import { ExperienceFilters } from "@/components/experiences/experience-filters"
 import { Suspense } from "react"
 import { ExperiencesNavigation } from "@/components/experiences/experiences-navigation"
+import { PageHeader } from "@/components/dashboard/page-header"
 
 export default async function ExperiencesRepository({
   searchParams,
@@ -27,6 +28,14 @@ export default async function ExperiencesRepository({
   const role = typeof params.role === 'string' ? params.role : undefined
   const year = typeof params.year === 'string' ? parseInt(params.year) : undefined
   const difficulty = typeof params.difficulty === 'string' ? parseInt(params.difficulty) : undefined
+  const sort = typeof params.sort === 'string' ? params.sort : 'recent'
+
+  let orderBy: any = { createdAt: 'desc' }
+  if (sort === 'trending') {
+    orderBy = [{ upvotes: 'desc' }, { createdAt: 'desc' }]
+  } else if (sort === 'helpful') {
+    orderBy = { upvotes: 'desc' }
+  }
 
   // Helper to format query for Postgres FTS tsquery
   const formatSearchQuery = (query: string) => {
@@ -78,7 +87,7 @@ export default async function ExperiencesRepository({
         user: true,
         votes: { where: { userId: user.id } },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy,
       skip: (page - 1) * limit,
       take: limit,
     }),
@@ -91,14 +100,15 @@ export default async function ExperiencesRepository({
     <div className="flex flex-col space-y-6 animate-in fade-in duration-500">
       <ExperiencesNavigation />
       <div className="flex flex-col space-y-6">
-        <div className="mb-2">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500">
-            Experience Repository
-          </h1>
-          <p className="text-muted-foreground mt-2 text-lg">
-            Browse {total} interview experiences from the community.
-          </p>
-        </div>
+        <PageHeader
+          title="Experience Repository"
+          subtitle={`Browse ${total} verified candidate interview and assessment experiences from the community.`}
+          badge={
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary">
+              {total} Submissions
+            </span>
+          }
+        />
 
         <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-2xl"></div>}>
           <ExperienceFilters />

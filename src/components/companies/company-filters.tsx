@@ -2,17 +2,21 @@
 
 import { useCallback, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Search } from "lucide-react"
+import { Search, FilterX } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface CompanyFiltersProps {
   industries: string[]
 }
+
+const CATEGORY_CHIPS = ["Product", "Fintech", "Service", "Off-Campus"]
 
 export function CompanyFilters({ industries }: CompanyFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const [search, setSearch] = useState(searchParams.get("search") || "")
+  const currentIndustry = searchParams.get("industry") || ""
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -22,7 +26,7 @@ export function CompanyFilters({ industries }: CompanyFiltersProps) {
       } else {
         params.delete(name)
       }
-      params.delete("page") // Reset page on filter change
+      params.delete("page")
       return params.toString()
     },
     [searchParams]
@@ -30,58 +34,104 @@ export function CompanyFilters({ industries }: CompanyFiltersProps) {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    router.push(`/companies?${createQueryString("search", search)}`)
+    router.push(`/dashboard/companies?${createQueryString("search", search)}`)
   }
 
   const handleSelectFilter = (name: string, value: string) => {
-    router.push(`/companies?${createQueryString(name, value)}`)
+    router.push(`/dashboard/companies?${createQueryString(name, value)}`)
   }
 
-  return (
-    <div className="flex flex-col md:flex-row gap-4 mb-8">
-      {/* Search Bar */}
-      <form onSubmit={handleSearch} className="flex-1 relative">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-muted-foreground" />
-        </div>
-        <input
-          type="text"
-          placeholder="Search companies by name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/20 bg-white/20 dark:bg-black/20 backdrop-blur-xl shadow-clay-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-foreground placeholder:text-muted-foreground"
-        />
-        <button type="submit" className="hidden" />
-      </form>
+  const handleClear = () => {
+    setSearch("")
+    router.push(`/dashboard/companies`)
+  }
 
-      {/* Industry Filter */}
-      <div className="w-full md:w-64">
-        <select
-          defaultValue={searchParams.get("industry") || ""}
-          onChange={(e) => handleSelectFilter("industry", e.target.value)}
-          className="w-full px-4 py-4 rounded-2xl border border-white/20 bg-white/20 dark:bg-black/20 backdrop-blur-xl shadow-clay-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-foreground appearance-none cursor-pointer"
-        >
-          <option value="">All Industries</option>
-          {industries.map((ind) => (
-            <option key={ind} value={ind}>
-              {ind}
-            </option>
-          ))}
-        </select>
+  const hasFilters = search || currentIndustry
+
+  return (
+    <div className="p-4 sm:p-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-[var(--shadow-elevation-card)] space-y-4">
+      {/* Category Chips */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[var(--border-subtle)]">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mr-1">
+            Categories:
+          </span>
+          <button
+            onClick={() => handleSelectFilter("industry", "")}
+            className={cn(
+              "px-3 py-1 rounded-xl text-xs font-semibold transition-all border",
+              !currentIndustry
+                ? "bg-primary text-primary-foreground border-primary shadow-2xs"
+                : "border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 text-muted-foreground hover:text-foreground"
+            )}
+          >
+            All
+          </button>
+          {CATEGORY_CHIPS.map((cat) => {
+            const isSelected = currentIndustry.toLowerCase() === cat.toLowerCase()
+            return (
+              <button
+                key={cat}
+                onClick={() => handleSelectFilter("industry", isSelected ? "" : cat)}
+                className={cn(
+                  "px-3 py-1 rounded-xl text-xs font-semibold transition-all border",
+                  isSelected
+                    ? "bg-primary text-primary-foreground border-primary shadow-2xs"
+                    : "border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 text-muted-foreground hover:text-foreground hover:bg-[var(--bg-elevated)]"
+                )}
+              >
+                {cat}
+              </button>
+            )
+          })}
+        </div>
+
+        {hasFilters && (
+          <button
+            onClick={handleClear}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-destructive transition-colors"
+          >
+            <FilterX className="size-3.5" />
+            <span>Reset</span>
+          </button>
+        )}
       </div>
 
-      {/* Sort By */}
-      <div className="w-full md:w-48">
-        <select
-          defaultValue={searchParams.get("sort") || "name"}
-          onChange={(e) => handleSelectFilter("sort", e.target.value)}
-          className="w-full px-4 py-4 rounded-2xl border border-white/20 bg-white/20 dark:bg-black/20 backdrop-blur-xl shadow-clay-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-foreground appearance-none cursor-pointer"
-        >
-          <option value="name">Sort by Name (A-Z)</option>
-          <option value="popular">Most Experiences</option>
-          <option value="applications">Most Applications</option>
-          <option value="recent">Recently Active</option>
-        </select>
+      {/* Instant Search Bar & Industry Dropdown */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <form onSubmit={handleSearch} className="flex-1 relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="size-4 text-muted-foreground" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search companies by name..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value)
+            }}
+            onBlur={() => router.push(`/dashboard/companies?${createQueryString("search", search)}`)}
+            className="w-full h-9 pl-9 pr-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-canvas)] text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
+          />
+          <button type="submit" className="hidden" />
+        </form>
+
+        {industries.length > 0 && (
+          <div className="w-full sm:w-60">
+            <select
+              value={currentIndustry}
+              onChange={(e) => handleSelectFilter("industry", e.target.value)}
+              className="w-full h-9 px-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-canvas)] text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
+            >
+              <option value="">All Industries</option>
+              {industries.map((ind) => (
+                <option key={ind} value={ind}>
+                  {ind}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -21,16 +21,16 @@ export async function InterviewPreparationWidget() {
   if (!analytics || (recommendations.length === 0 && analytics.totalSessions === 0)) return null
 
   return (
-    <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-md rounded-3xl border border-orange-500/20 p-5 shadow-clay-sm relative overflow-hidden">
-      <div className="absolute top-0 right-0 p-16 bg-orange-500/20 rounded-full blur-3xl -z-10 mix-blend-multiply" />
+    <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border-subtle)] p-5 shadow-[var(--shadow-elevation-card)] relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-16 bg-[var(--accent-copper)]/10 rounded-full blur-3xl -z-10" />
       
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Target className="size-5 text-orange-500" />
+          <Target className="size-5 text-[var(--accent-copper)]" />
           <h3 className="font-bold text-lg text-foreground">Interview Prep</h3>
         </div>
         {analytics.streak > 0 && (
-          <div className="flex items-center gap-1 text-sm font-bold text-orange-500 bg-orange-500/10 px-2 py-1 rounded-lg">
+          <div className="flex items-center gap-1 text-sm font-bold text-[var(--accent-copper)] bg-[var(--accent-copper)]/10 px-2 py-1 rounded-lg">
             <Flame className="size-4" /> {analytics.streak} Day Streak
           </div>
         )}
@@ -86,7 +86,7 @@ export async function InterviewPreparationWidget() {
                 </span>
                 <Link 
                   href={`/dashboard/mock-interviews/practice?company=${encodeURIComponent(rec.application.company.name)}`}
-                  className="flex items-center gap-1 text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+                  className="flex items-center gap-1 text-xs font-bold text-white bg-[var(--accent-copper)] hover:opacity-90 px-3 py-1.5 rounded-lg transition-colors shadow-sm"
                 >
                   Continue Practice <ArrowRight className="size-3" />
                 </Link>
@@ -100,7 +100,7 @@ export async function InterviewPreparationWidget() {
             <p className="text-sm font-semibold mb-3">You have practiced {analytics.totalSessions} questions overall.</p>
             <Link 
               href={`/dashboard/mock-interviews`}
-              className="inline-flex items-center gap-1 text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-xl transition-colors shadow-sm"
+              className="inline-flex items-center gap-1 text-xs font-bold text-white bg-[var(--accent-copper)] hover:opacity-90 px-4 py-2 rounded-xl transition-colors shadow-sm"
             >
               Continue Practice <ArrowRight className="size-3" />
             </Link>

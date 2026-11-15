@@ -23,7 +23,7 @@ export async function TrendingCompanies() {
   if (trending.length === 0) return null
 
   return (
-    <Card className="bg-white/40 dark:bg-white/5 backdrop-blur-xl border-border/50 shadow-clay-light dark:shadow-none">
+    <Card>
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-bold flex items-center gap-2">
           <TrendingUp className="size-5 text-primary" /> Trending Companies

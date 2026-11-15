@@ -1,10 +1,9 @@
 import { currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
-import { ApplicationCard } from "@/components/applications/application-card"
 import { NewApplicationButton } from "@/components/applications/new-application-button"
-import { FileText } from "lucide-react"
-import { EmptyState } from "@/components/ui/empty-state"
+import { PageHeader } from "@/components/dashboard/page-header"
+import { ApplicationsView } from "@/components/applications/applications-view"
 
 export default async function ApplicationsPage() {
   const user = await currentUser()
@@ -23,31 +22,19 @@ export default async function ApplicationsPage() {
   })
 
   return (
-    <div className="flex flex-col space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-1">Applications</h1>
-          <p className="text-muted-foreground text-sm">
-            Manage and track all the roles you have applied for.
-          </p>
-        </div>
-        <NewApplicationButton />
-      </div>
+    <div className="flex flex-col space-y-6 pb-12 animate-page-enter">
+      <PageHeader
+        title="Applications Tracker"
+        subtitle="Manage and track all the roles, assessments, and interview stages you have applied for."
+        badge={
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-muted-foreground">
+            {applications.length} {applications.length === 1 ? "role" : "roles"}
+          </span>
+        }
+        actions={<NewApplicationButton />}
+      />
 
-      {applications.length === 0 ? (
-        <EmptyState 
-          icon={FileText}
-          title="No applications found"
-          description="You haven't tracked any applications yet. Click the button above to add your first one!"
-          action={<NewApplicationButton />}
-        />
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {applications.map((app) => (
-            <ApplicationCard key={app.id} application={app} />
-          ))}
-        </div>
-      )}
+      <ApplicationsView initialApplications={applications} />
     </div>
   )
 }

@@ -5,11 +5,13 @@ import {
   getBookmarkedQuestions,
   getUserPracticeAnalytics
 } from "@/actions/mock-interviews"
-import { Building2, BrainCircuit, Target, ArrowRight, Play, CheckCircle2, Bookmark } from "lucide-react"
+import { Building2, BrainCircuit, Target, ArrowRight, Play, CheckCircle2, Bookmark, Plus } from "lucide-react"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PreparationAnalytics } from "@/components/mock-interviews/preparation-analytics"
 import { PersonalQuestionBank } from "@/components/mock-interviews/personal-question-bank"
+import { PageHeader } from "@/components/dashboard/page-header"
+import { Card } from "@/components/ui/card"
 
 export const dynamic = 'force-dynamic'
 
@@ -23,29 +25,50 @@ export default async function MockInterviewsHub() {
   ])
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-12 animate-in fade-in duration-500">
-      
-      {/* Header */}
-      <div className="flex flex-col items-center text-center space-y-4 mb-8">
-        <div className="p-4 bg-emerald-500/10 rounded-full mb-2 shadow-clay-inset">
-          <BrainCircuit className="size-12 text-emerald-500" />
-        </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-teal-500">
-          Preparation Platform
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl">
-          Practice company-specific questions, track your progress, and master your technical interviews.
-        </p>
-      </div>
+    <div className="flex flex-col space-y-6 pb-12 animate-page-enter">
+      {/* Compact PageHeader */}
+      <PageHeader
+        title="Interview Preparation Platform"
+        subtitle="Practice company-specific questions, track your mastery streak, and conquer technical rounds."
+        badge={
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary">
+            Active Prep Hub
+          </span>
+        }
+        actions={
+          <Link
+            href="/dashboard/mock-interviews/new"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-[var(--accent-primary-hover)] text-primary-foreground shadow-2xs transition-colors"
+          >
+            <Plus className="size-3.5" />
+            <span>Create Question</span>
+          </Link>
+        }
+      />
 
       <PreparationAnalytics analytics={analytics} />
 
       <Tabs defaultValue="recommended" className="w-full">
-        <div className="flex justify-center mb-8">
-          <TabsList className="bg-white/5 border border-white/10 p-1 rounded-2xl shadow-inner">
-            <TabsTrigger value="recommended" className="rounded-xl px-6 data-[state=active]:bg-orange-500 data-[state=active]:text-white">Recommended</TabsTrigger>
-            <TabsTrigger value="personal" className="rounded-xl px-6 data-[state=active]:bg-orange-500 data-[state=active]:text-white">Personal Bank</TabsTrigger>
-            <TabsTrigger value="community" className="rounded-xl px-6 data-[state=active]:bg-orange-500 data-[state=active]:text-white">Community Hub</TabsTrigger>
+        <div className="flex justify-start sm:justify-center mb-6">
+          <TabsList className="bg-[var(--bg-elevated)] border border-[var(--border-subtle)] p-1 rounded-2xl shadow-2xs">
+            <TabsTrigger
+              value="recommended"
+              className="rounded-xl px-4 sm:px-6 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Recommended Focus
+            </TabsTrigger>
+            <TabsTrigger
+              value="personal"
+              className="rounded-xl px-4 sm:px-6 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Personal Bank
+            </TabsTrigger>
+            <TabsTrigger
+              value="community"
+              className="rounded-xl px-4 sm:px-6 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Company Question Banks
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -53,116 +76,131 @@ export default async function MockInterviewsHub() {
           {recommendations.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2">
               {recommendations.map(rec => (
-                <div key={rec.application.id} className="bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-clay-md relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-24 bg-orange-500/5 rounded-full blur-[80px] -z-10 mix-blend-multiply" />
-                  
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <p className="text-sm font-medium text-orange-500 mb-1">Upcoming {rec.application.status === 'ONLINE_ASSESSMENT' ? 'Assessment' : 'Interview'}</p>
-                      <h3 className="text-2xl font-bold">{rec.application.company.name}</h3>
-                    </div>
-                    {rec.application.company.logo ? (
-                      <img src={rec.application.company.logo} alt="" className="size-12 rounded-xl" />
-                    ) : (
-                      <Building2 className="size-12 p-2 bg-white/20 rounded-xl" />
-                    )}
-                  </div>
-
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">Recommended Topics:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {rec.topics.map(t => (
-                          <span key={t} className="px-2 py-1 bg-white/20 dark:bg-white/5 border border-white/10 rounded-md text-xs font-semibold">
-                            {t}
-                          </span>
-                        ))}
+                <Card key={rec.application.id} className="p-6 flex flex-col justify-between h-full">
+                  <div>
+                    <div className="flex justify-between items-start gap-4 mb-4">
+                      <div>
+                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[var(--accent-copper)]/10 text-[var(--accent-copper)] border border-[var(--accent-copper)]/20 mb-2 inline-block">
+                          Upcoming {rec.application.status === 'ONLINE_ASSESSMENT' ? 'Assessment' : 'Interview'}
+                        </span>
+                        <h3 className="text-2xl font-bold text-foreground">{rec.application.company.name}</h3>
                       </div>
+                      {rec.application.company.logo ? (
+                        <img src={rec.application.company.logo} alt="" className="size-11 rounded-xl object-cover border border-[var(--border-subtle)]" />
+                      ) : (
+                        <div className="size-11 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] flex items-center justify-center font-bold text-base text-foreground">
+                          {rec.application.company.name.charAt(0)}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <CheckCircle2 className="size-4 text-emerald-500" />
-                      <span>{rec.recommendedQuestions.length} Questions Available</span>
+
+                    <div className="space-y-3 mb-6">
+                      <div>
+                        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-2">Recommended Focus Modules:</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {rec.topics.map(t => (
+                            <span key={t} className="px-2 py-0.5 bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-md text-xs font-semibold text-foreground">
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-medium text-foreground pt-1">
+                        <CheckCircle2 className="size-4 text-primary" />
+                        <span>{rec.recommendedQuestions.length} Questions Available</span>
+                      </div>
                     </div>
                   </div>
 
                   <Link 
                     href={`/dashboard/mock-interviews/practice?company=${encodeURIComponent(rec.application.company.name)}`}
-                    className="flex items-center justify-center w-full gap-2 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold transition-all shadow-md hover:shadow-lg"
+                    className="flex items-center justify-center w-full gap-2 bg-primary hover:bg-[var(--accent-primary-hover)] text-primary-foreground py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs"
                   >
-                    <Play className="size-4" fill="currentColor" />
-                    Start Practice Session
+                    <Play className="size-3.5 fill-current" />
+                    <span>Start Practice Session</span>
                   </Link>
-                </div>
+                </Card>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground bg-white/5 rounded-3xl border border-white/10 border-dashed">
-              <Target className="size-12 mx-auto mb-4 text-muted-foreground/50" />
-              <h3 className="text-lg font-bold text-foreground">No Upcoming Interviews</h3>
-              <p>Apply to jobs to get personalized recommendations here.</p>
+            <div className="text-center py-16 text-muted-foreground rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]/60 space-y-2">
+              <Target className="size-10 mx-auto text-muted-foreground/40 mb-2" />
+              <h3 className="text-base font-bold text-foreground">No Upcoming Interviews Scheduled</h3>
+              <p className="text-xs max-w-sm mx-auto">
+                Track job applications with target assessment or interview dates to unlock personalized preparation question sets.
+              </p>
             </div>
           )}
         </TabsContent>
 
         <TabsContent value="personal" className="mt-0 border-none p-0 outline-none">
-          <div className="bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-clay-md">
-            <div className="flex items-center justify-between mb-6">
+          <Card className="p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-[var(--border-subtle)]">
               <div>
-                <h2 className="text-2xl font-bold">Personal Question Bank</h2>
-                <p className="text-sm text-muted-foreground mt-1">Your private collection of questions and expected answers.</p>
+                <h2 className="text-lg font-bold text-foreground">Personal Question Bank</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Your private collection of logged interview questions, hints, and expected responses.</p>
               </div>
-              <Link href="/dashboard/mock-interviews/new" className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-orange-600 transition-colors">
-                + Create Question
+              <Link
+                href="/dashboard/mock-interviews/new"
+                className="inline-flex items-center gap-1.5 bg-primary hover:bg-[var(--accent-primary-hover)] text-primary-foreground px-3.5 py-2 rounded-xl text-xs font-bold shadow-2xs transition-colors self-start sm:self-auto"
+              >
+                <Plus className="size-3.5" />
+                <span>Add Question</span>
               </Link>
             </div>
             <PersonalQuestionBank personalQuestions={personalQuestions} bookmarkedQuestions={bookmarkedQuestions} />
-          </div>
+          </Card>
         </TabsContent>
 
         <TabsContent value="community" className="space-y-6 mt-0 border-none p-0 outline-none">
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <Building2 className="size-6 text-blue-500" />
-              <h2 className="text-2xl font-bold">Company Question Banks</h2>
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-2">
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Company Question Banks</h2>
+              <p className="text-xs text-muted-foreground">Crowdsourced technical, behavioral, and system design questions.</p>
             </div>
-            <Link href="/dashboard/mock-interviews/new" className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors">
-              Contribute Question
+            <Link
+              href="/dashboard/mock-interviews/new"
+              className="inline-flex items-center gap-1.5 bg-primary hover:bg-[var(--accent-primary-hover)] text-primary-foreground px-3.5 py-2 rounded-xl text-xs font-bold transition-colors shadow-2xs"
+            >
+              <Plus className="size-3.5" />
+              <span>Contribute Question</span>
             </Link>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
             {companies.filter(c => c.totalQuestions > 0).map(company => (
-              <Link key={company.id} href={`/dashboard/mock-interviews/${encodeURIComponent(company.name)}`}>
-                <div className="group flex flex-col h-full p-6 space-y-6 border border-white/20 rounded-3xl bg-white/10 dark:bg-black/10 backdrop-blur-xl shadow-clay-sm hover:shadow-clay-md transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-center justify-between">
-                    <div className="size-12 rounded-xl bg-white/50 dark:bg-black/50 shadow-inner flex items-center justify-center overflow-hidden shrink-0">
-                      {company.logo ? (
-                        <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <Building2 className="size-6 text-primary/70" />
-                      )}
+              <Link key={company.id} href={`/dashboard/mock-interviews/${encodeURIComponent(company.name)}`} className="block group">
+                <Card className="p-6 h-full flex flex-col justify-between hover:border-primary/40 transition-colors">
+                  <div className="flex items-center justify-between gap-4 mb-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="size-11 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] flex items-center justify-center overflow-hidden shrink-0">
+                        {company.logo ? (
+                          <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="font-extrabold text-sm text-foreground">
+                            {company.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                          {company.name}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {company.totalQuestions} Questions · {company.totalContributors} Contributors
+                        </p>
+                      </div>
                     </div>
-                    <ArrowRight className="size-5 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-xl font-bold line-clamp-1">{company.name}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {company.totalQuestions} Questions • {company.totalContributors} Contributors
-                    </p>
+                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-1 shrink-0" />
                   </div>
 
-                  <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-muted-foreground">
-                    <span>{company.totalPracticeSessions} Sessions</span>
+                  <div className="mt-auto pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{company.totalPracticeSessions} Sessions Completed</span>
+                    <span className="font-semibold text-primary">Explore Bank →</span>
                   </div>
-                </div>
+                </Card>
               </Link>
             ))}
-            {companies.filter(c => c.totalQuestions > 0).length === 0 && (
-              <div className="col-span-full text-center py-12 text-muted-foreground bg-white/5 rounded-3xl border border-white/10 border-dashed">
-                No mock questions have been added yet. Be the first to contribute!
-              </div>
-            )}
           </div>
         </TabsContent>
       </Tabs>

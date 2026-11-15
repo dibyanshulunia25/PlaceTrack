@@ -13,7 +13,7 @@ interface MetricCardProps {
 
 export function MetricCard({ title, value, icon: Icon, description, className, highlight }: MetricCardProps) {
   return (
-    <Card className={cn("bg-white dark:bg-white/5 backdrop-blur-xl border-border/80 dark:border-white/10 shadow-md dark:shadow-none hover:shadow-lg dark:hover:shadow-none transition-all", highlight && "border-primary/50 shadow-md", className)}>
+    <Card className={cn("transition-all hover:border-primary/40", highlight && "border-primary/50 shadow-md", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
           {title}

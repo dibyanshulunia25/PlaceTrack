@@ -50,7 +50,7 @@ export function CommunityFeed({ initialExperiences }: { initialExperiences: any[
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 mb-6 bg-white/40 dark:bg-white/5 p-1 rounded-lg backdrop-blur-xl border border-border/50 shadow-clay-inset w-fit">
+      <div className="flex items-center gap-2 mb-6 bg-[var(--bg-surface)] p-1 rounded-xl border border-[var(--border-subtle)] w-fit shadow-2xs">
         <button 
           onClick={() => setSort('recent')}
           className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${sort === 'recent' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}

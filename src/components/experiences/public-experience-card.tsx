@@ -17,7 +17,7 @@ export function PublicExperienceCard({ experience, index }: { experience: any, i
       className="h-full"
     >
       <Link href={`/dashboard/experiences/${encodeURIComponent(experience.company.name)}/${experience.id}`}>
-        <Card className="bg-white dark:bg-white/5 backdrop-blur-xl border-border/80 dark:border-white/10 shadow-md dark:shadow-none hover:shadow-xl transition-all flex flex-col h-full cursor-pointer">
+        <Card className="hover:border-primary/40 hover:shadow-md transition-all flex flex-col h-full cursor-pointer">
           <CardHeader className="pb-3">
             <div className="flex gap-4 items-start">
               <div onClick={e => e.preventDefault()} className="flex-shrink-0 pt-0.5">

@@ -5,16 +5,28 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --color-bg-canvas: var(--bg-canvas);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-border-subtle: var(--border-subtle);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-primary-hover: var(--accent-primary-hover);
+  --color-accent-copper: var(--accent-copper);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-glass: var(--glass);
   
   --shadow-clay: var(--shadow-clay);
   --shadow-clay-inset: var(--shadow-clay-inset);
+  --shadow-elevation-card: var(--shadow-elevation-card);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -40,70 +52,132 @@
 }
 
 :root {
-  /* Light Theme Palette - Apple Sleek */
-  --background: #F5F5F7; /* Apple's exact off-white */
-  --foreground: #1D1D1F; /* Apple's exact text dark */
-  --surface: #FFFFFF;
-  --card: #FFFFFF;
-  --accent: #F5F5F7;
-  --accent-foreground: #1D1D1F;
+  /* ==========================================================================
+     Locked Color System - Light Mode: Warm Stone & Forest Emerald Sage
+     ========================================================================== */
+  --bg-canvas: #F7F6F3;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #EFECE6;
+  --border-subtle: #E4E1DA;
+  --text-primary: #1C1B18;
+  --text-secondary: #5F5D57;
+  --accent-primary: #1B6B50;
+  --accent-primary-hover: #14533E;
+  --accent-copper: #C26D2D;
 
-  /* Glassmorphism */
-  --glass: rgba(255, 255, 255, 0.7);
+  /* Semantic Status Pills (Light Mode) */
+  --status-applied-bg: #F3F4F6;
+  --status-applied-text: #374151;
+  --status-applied-border: #D1D5DB;
 
-  /* Claymorphism */
-  --shadow-clay: 10px 10px 20px rgba(180, 190, 200, 0.4), -10px -10px 20px rgba(255, 255, 255, 0.9);
-  --shadow-clay-inset: inset 4px 4px 8px rgba(180, 190, 200, 0.2), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+  --status-assessment-bg: #FEF3C7;
+  --status-assessment-text: #B45309;
+  --status-assessment-border: #FDE68A;
 
-  /* Shadcn Mapped */
-  --card-foreground: #1D1D1F;
-  --popover: #FFFFFF;
-  --popover-foreground: #1D1D1F;
-  --primary: #0071E3; /* Apple Blue Fallback */
+  --status-interview-bg: #FFEDD5;
+  --status-interview-text: #C2410C;
+  --status-interview-border: #FED7AA;
+
+  --status-offer-bg: #DCFCE7;
+  --status-offer-text: #15803D;
+  --status-offer-border: #BBF7D0;
+
+  --status-rejected-bg: #FEE2E2;
+  --status-rejected-text: #B91C1C;
+  --status-rejected-border: #FECACA;
+
+  /* Standard Shadcn & Base Mappings */
+  --background: var(--bg-canvas);
+  --foreground: var(--text-primary);
+  --surface: var(--bg-surface);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-surface);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent-primary);
   --primary-foreground: #FFFFFF;
-  --secondary: #E8E8ED;
-  --secondary-foreground: #1D1D1F;
-  --muted: #E2E8F0;
-  --muted-foreground: #86868B;
-  --destructive: #FF3B30; /* Apple Red */
+  --secondary: var(--bg-elevated);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-elevated);
+  --muted-foreground: var(--text-secondary);
+  --destructive: #B91C1C;
   --destructive-foreground: #FFFFFF;
-  --border: #D2D2D7;
-  --input: #D2D2D7;
-  --ring: #0071E3;
-  --radius: 1.2rem; /* More rounded like Apple */
+  --border: var(--border-subtle);
+  --input: var(--border-subtle);
+  --ring: var(--accent-primary);
+  --accent: var(--bg-elevated);
+  --accent-foreground: var(--text-primary);
+  --radius: 1rem;
+
+  /* Glassmorphism & Elevation */
+  --glass: rgba(255, 255, 255, 0.85);
+  --shadow-elevation-card: 0 2px 8px rgba(28, 27, 24, 0.04), 0 1px 2px rgba(28, 27, 24, 0.02);
+  --shadow-clay: 0 3px 10px rgba(28, 27, 24, 0.05);
+  --shadow-clay-inset: inset 0 1px 2px rgba(28, 27, 24, 0.06);
 }
 
 .dark {
-  /* Dark Theme Palette - Apple Sleek Dark */
-  --background: #000000; /* Apple pure black */
-  --foreground: #F5F5F7;
-  --surface: #1C1C1E; /* Apple dark gray */
-  --card: #1C1C1E;
-  --accent: #2C2C2E;
-  --accent-foreground: #F5F5F7;
+  /* ==========================================================================
+     Locked Color System - Dark Mode: Matte Obsidian with Muted Teal & Brushed Copper
+     ========================================================================== */
+  --bg-canvas: #111214;
+  --bg-surface: #191B1F;
+  --bg-elevated: #22252B;
+  --border-subtle: #2A2E35;
+  --text-primary: #ECEEF0;
+  --text-secondary: #9499A3;
+  --accent-primary: #2A9D8F;
+  --accent-primary-hover: #34B3A3;
+  --accent-copper: #D97736;
 
-  /* Glassmorphism */
-  --glass: rgba(28, 28, 30, 0.6);
+  /* Semantic Status Pills (Dark Mode) */
+  --status-applied-bg: #1F242B;
+  --status-applied-text: #9CA3AF;
+  --status-applied-border: #323842;
 
-  /* Claymorphism */
-  --shadow-clay: 10px 10px 20px rgba(0, 0, 0, 0.8), -10px -10px 20px rgba(44, 44, 46, 0.3);
-  --shadow-clay-inset: inset 4px 4px 8px rgba(0, 0, 0, 0.6), inset -4px -4px 8px rgba(44, 44, 46, 0.2);
+  --status-assessment-bg: #2C2416;
+  --status-assessment-text: #FBBF24;
+  --status-assessment-border: #45371E;
 
-  /* Shadcn Mapped */
-  --card-foreground: #F5F5F7;
-  --popover: #1C1C1E;
-  --popover-foreground: #F5F5F7;
-  --primary: #0A84FF; /* Apple Dark Mode Blue Fallback */
+  --status-interview-bg: #2E1F16;
+  --status-interview-text: #F59E0B;
+  --status-interview-border: #4A3121;
+
+  --status-offer-bg: #132A24;
+  --status-offer-text: #34D399;
+  --status-offer-border: #1E4239;
+
+  --status-rejected-bg: #2B1719;
+  --status-rejected-text: #F87171;
+  --status-rejected-border: #472326;
+
+  /* Standard Shadcn & Base Mappings */
+  --background: var(--bg-canvas);
+  --foreground: var(--text-primary);
+  --surface: var(--bg-surface);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-surface);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent-primary);
   --primary-foreground: #FFFFFF;
-  --secondary: #2C2C2E;
-  --secondary-foreground: #F5F5F7;
-  --muted: #2C2C2E;
-  --muted-foreground: #86868B;
-  --destructive: #FF453A; /* Apple Dark Red */
+  --secondary: var(--bg-elevated);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-elevated);
+  --muted-foreground: var(--text-secondary);
+  --destructive: #F87171;
   --destructive-foreground: #FFFFFF;
-  --border: #38383A;
-  --input: #38383A;
-  --ring: #0A84FF;
+  --border: var(--border-subtle);
+  --input: var(--border-subtle);
+  --ring: var(--accent-primary);
+  --accent: var(--bg-elevated);
+  --accent-foreground: var(--text-primary);
+
+  /* Glassmorphism & Elevation */
+  --glass: rgba(25, 27, 31, 0.85);
+  --shadow-elevation-card: 0 2px 10px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-clay: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-clay-inset: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 @layer base {
@@ -122,31 +196,103 @@
 }
 
 @layer utilities {
-  /* Apple Marketing Style Gradient for Primary Backgrounds */
-  .bg-primary {
-    background: linear-gradient(135deg, #00C6FF 0%, #0072FF 50%, #4FACFE 100%) !important;
-    background-size: 200% 200% !important;
-    animation: gradient-shift 5s ease infinite;
-    color: white !important;
-    border: none !important;
+  /* Subtle primary button hover effect */
+  .btn-primary-accent {
+    background-color: var(--accent-primary);
+    color: #ffffff;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+  }
+  .btn-primary-accent:hover {
+    background-color: var(--accent-primary-hover);
   }
 
-  .bg-primary:hover {
-    background: linear-gradient(135deg, #4FACFE 0%, #00C6FF 50%, #0072FF 100%) !important;
-    opacity: 0.95;
+  /* Semantic Status Pill Utilities */
+  .pill-status-applied {
+    background-color: var(--status-applied-bg);
+    color: var(--status-applied-text);
+    border: 1px solid var(--status-applied-border);
+  }
+  .pill-status-assessment {
+    background-color: var(--status-assessment-bg);
+    color: var(--status-assessment-text);
+    border: 1px solid var(--status-assessment-border);
+  }
+  .pill-status-interview {
+    background-color: var(--status-interview-bg);
+    color: var(--status-interview-text);
+    border: 1px solid var(--status-interview-border);
+  }
+  .pill-status-offer {
+    background-color: var(--status-offer-bg);
+    color: var(--status-offer-text);
+    border: 1px solid var(--status-offer-border);
+  }
+  .pill-status-rejected {
+    background-color: var(--status-rejected-bg);
+    color: var(--status-rejected-text);
+    border: 1px solid var(--status-rejected-border);
   }
 
-  /* Sleek subtle text gradient class */
-  .text-gradient-apple {
-    background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  /* 150ms Lightweight Route & Tab Enter Transition */
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-}
 
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  .animate-page-enter {
+    animation: page-enter 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Shimmer Skeleton Sweep */
+  @keyframes shimmer-sweep {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .animate-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 100%
+    );
+    animation: shimmer-sweep 1.8s infinite;
+  }
+
+  .dark .animate-shimmer::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 100%
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-page-enter {
+      animation: none !important;
+    }
+    .animate-shimmer::after {
+      animation: none !important;
+    }
+  }
 }

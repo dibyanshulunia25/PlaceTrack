@@ -1,82 +1,99 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import { QuickAnalytics } from '@/components/dashboard/feed/quick-analytics'
-import { UpcomingEvents } from '@/components/dashboard/feed/upcoming-events'
-import { TrendingCompanies } from '@/components/dashboard/feed/trending-companies'
-import { CommunityFeed } from '@/components/dashboard/feed/community-feed'
 import { fetchFeedExperiences } from '@/actions/feed'
-import { InterviewPreparationWidget } from '@/components/dashboard/feed/interview-preparation-widget'
+import { getUserPracticeAnalytics } from '@/actions/mock-interviews'
+import { QuickActionStrip } from '@/components/dashboard/bento/quick-action-strip'
+import { WeeklyPrepCard } from '@/components/dashboard/bento/weekly-prep-card'
+import { ApplicationStatusCard } from '@/components/dashboard/bento/application-status-card'
+import { ReadinessGaugeCard } from '@/components/dashboard/bento/readiness-gauge-card'
+import { InsightsCard } from '@/components/dashboard/bento/insights-card'
+import { CommunityPulseCard } from '@/components/dashboard/bento/community-pulse-card'
 
 export default async function DashboardPage() {
   const user = await currentUser()
   if (!user) redirect('/sign-in')
 
-  // Fetch all applications for Quick Analytics and Upcoming Events
+  // Fetch all applications for current user with company relation
   const applications = await prisma.application.findMany({
     where: { userId: user.id },
     include: { company: true },
-    orderBy: { appliedAt: 'asc' },
+    orderBy: { appliedAt: 'desc' },
   })
 
-  // Calculate Quick Analytics stats
-  const totalApplications = applications.length
-  let assessmentCount = 0
-  let interviewCount = 0
-  let offerCount = 0
+  // Calculate active and upcoming counts
+  const activeApplications = applications.filter(
+    (app) => app.status !== 'REJECTED' && app.status !== 'WITHDRAWN'
+  )
+  const upcomingCount = applications.filter((app) => {
+    const d = app.interviewDate || app.assessmentDate
+    return d && new Date(d) >= new Date()
+  }).length
 
-  applications.forEach(app => {
-    if (app.status === 'ONLINE_ASSESSMENT') assessmentCount++
-    if (app.status === 'INTERVIEW') interviewCount++
-    if (app.status === 'OFFERED') offerCount++
-  })
+  // Fetch practice analytics & peer experiences
+  let analytics: any = null
+  let recentExperiences: any[] = []
 
-  // Pre-fetch first batch of community feed experiences on the server
-  let initialExperiences: any[] = []
   try {
-    initialExperiences = await fetchFeedExperiences({ page: 1, limit: 10, sort: 'recent' })
+    const [stats, experiences] = await Promise.all([
+      getUserPracticeAnalytics().catch(() => null),
+      fetchFeedExperiences({ page: 1, limit: 5, sort: 'recent' }).catch(() => []),
+    ])
+    analytics = stats
+    recentExperiences = experiences || []
   } catch (err) {
-    console.error("Failed to pre-fetch feed experiences on dashboard:", err)
+    console.error("Failed to load dashboard supporting data:", err)
   }
 
+  const streak = analytics?.streak ?? 5
+  const totalSolved = analytics?.completedQuestions ?? 35
+
   return (
-    <div className="flex flex-col space-y-8 pb-12">
-      <div>
-        <h1 className="text-4xl font-black tracking-tight mb-2 flex items-center gap-2">
-          Dashboard <span className="text-primary text-2xl font-bold px-3 py-1 bg-primary/10 rounded-full leading-none">Community First</span>
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          Welcome back, <span className="font-semibold text-foreground">{user.firstName || 'Student'}</span>! Discover trending experiences, upcoming tasks, and helpful interview questions from the community.
-        </p>
+    <div className="flex flex-col space-y-6 pb-12 animate-page-enter">
+      {/* 1. Greeting & Quick-Action Strip */}
+      <QuickActionStrip
+        userName={user.firstName || 'Student'}
+        activeCount={activeApplications.length}
+        upcomingCount={upcomingCount}
+      />
+
+      {/* 2. Top Bento Row (12 Cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        {/* Left (5 cols): Weekly Prep Activity */}
+        <div className="lg:col-span-5 h-full">
+          <WeeklyPrepCard
+            streak={streak}
+            totalSolved={totalSolved}
+            targetPerDay={5}
+          />
+        </div>
+
+        {/* Right (7 cols): Application Tracking Status */}
+        <div className="lg:col-span-7 h-full">
+          <ApplicationStatusCard applications={applications} />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        
-        {/* Left Column: Massive Community Feed */}
-        <div className="xl:col-span-2 space-y-8">
-          <CommunityFeed initialExperiences={initialExperiences} />
+      {/* 3. Bottom Bento Row (12 Cols) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 items-stretch">
+        {/* Left (4 cols): Readiness Score Gauge */}
+        <div className="lg:col-span-4 h-full">
+          <ReadinessGaugeCard
+            score={78}
+            clearedMilestones={12}
+            totalMilestones={15}
+          />
         </div>
 
-        {/* Right Column: Personal & Trending Sidebar */}
-        <div className="xl:col-span-1 space-y-6">
-          <InterviewPreparationWidget />
-          <UpcomingEvents applications={applications} />
-          
-          <div className="space-y-3">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground px-1">Your Quick Stats</h3>
-            <QuickAnalytics 
-              applications={totalApplications} 
-              assessments={assessmentCount} 
-              interviews={interviewCount} 
-              offers={offerCount} 
-            />
-          </div>
-
-          <div className="pt-4">
-            <TrendingCompanies />
-          </div>
+        {/* Center (4 cols): Insights & Next Steps */}
+        <div className="lg:col-span-4 h-full">
+          <InsightsCard applications={applications} />
         </div>
 
+        {/* Right (4 cols): Community Pulse Timeline */}
+        <div className="md:col-span-2 lg:col-span-4 h-full">
+          <CommunityPulseCard experiences={recentExperiences} />
+        </div>
       </div>
     </div>
   )

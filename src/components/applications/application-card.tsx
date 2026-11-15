@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { deleteApplication } from "@/actions/applications"
 import { ApplicationForm } from "./application-form"
 import { ProgressTracker } from "./progress-tracker"
+import { StatusPill } from "@/components/ui/status-pill"
 import { useState, useTransition } from "react"
 import { cn } from "@/lib/utils"
 
@@ -27,10 +28,13 @@ export function ApplicationCard({ application }: { application: any }) {
 
   return (
     <>
-      <Card className="bg-white dark:bg-white/5 backdrop-blur-xl border-border/80 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 transition-all overflow-hidden flex flex-col shadow-md dark:shadow-none hover:shadow-lg dark:hover:shadow-none">
+      <Card className="hover:border-primary/40 transition-all overflow-hidden flex flex-col">
         <CardHeader className="pb-4">
           <div className="flex justify-between items-start gap-2">
             <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <StatusPill status={application.status} size="sm" />
+              </div>
               <CardTitle className="text-lg font-bold truncate leading-tight">{application.role}</CardTitle>
               <div className="flex items-center text-muted-foreground mt-1.5 text-sm font-medium">
                 <Building2 className="size-4 mr-1.5 flex-shrink-0" />

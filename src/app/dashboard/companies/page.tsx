@@ -4,6 +4,7 @@ import { CompanyFilters } from "@/components/companies/company-filters"
 import { PaginationWrapper } from "@/components/experiences/pagination-wrapper"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Building2 } from "lucide-react"
+import { PageHeader } from "@/components/dashboard/page-header"
 
 export const dynamic = 'force-dynamic'
 
@@ -27,18 +28,16 @@ export default async function CompaniesDirectoryPage({
   const { companies, totalPages, totalCompanies } = directoryData
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col items-center text-center space-y-4 mb-12">
-        <div className="p-4 bg-primary/10 rounded-full mb-2 shadow-clay-inset">
-          <Building2 className="size-10 text-primary" />
-        </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500">
-          Companies Directory
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl">
-          Explore {totalCompanies} companies to find interview questions, experiences, and application insights.
-        </p>
-      </div>
+    <div className="container max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
+      <PageHeader
+        title="Companies Directory"
+        subtitle={`Explore ${totalCompanies} hiring organizations, past rounds, and compensation insights.`}
+        badge={
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-muted-foreground">
+            {totalCompanies} Companies
+          </span>
+        }
+      />
 
       <CompanyFilters industries={industries} />
 

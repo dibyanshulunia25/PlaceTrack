@@ -1,5 +1,8 @@
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { Topbar } from "@/components/dashboard/topbar"
+import { InteractiveAppBackdrop } from "@/components/dashboard/interactive-app-backdrop"
+import { SidebarProvider } from "@/components/dashboard/sidebar-context"
+import { MobileBottomNav } from "@/components/dashboard/mobile-bottom-nav"
 
 export default function DashboardLayout({
   children,
@@ -7,21 +10,31 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex min-h-screen w-full bg-surface text-foreground selection:bg-primary/20">
-      {/* Desktop Sidebar */}
-      <Sidebar />
+    <SidebarProvider>
+      <div className="relative min-h-screen w-full bg-[var(--bg-canvas)] text-foreground selection:bg-primary/20 overflow-x-hidden">
+        {/* Living Interactive Backdrop */}
+        <InteractiveAppBackdrop />
 
-      <div className="flex flex-1 flex-col">
-        {/* Mobile Nav & Topbar */}
-        <Topbar />
-        
-        {/* Main Content Area */}
-        <main className="flex-1 bg-surface">
-          <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
-            {children}
+        <div className="relative z-10 flex min-h-screen w-full">
+          {/* Desktop & Tablet Sidebar */}
+          <Sidebar />
+
+          <div className="flex flex-1 flex-col min-w-0">
+            {/* Top Utility Bar (56px) */}
+            <Topbar />
+            
+            {/* Main Content Area with 180ms Page Enter Transition */}
+            <main className="flex-1 bg-transparent animate-page-enter">
+              <div className="mx-auto w-full max-w-6xl p-4 md:p-8 pb-24 md:pb-12">
+                {children}
+              </div>
+            </main>
           </div>
-        </main>
+        </div>
+
+        {/* Mobile Fixed Bottom Navigation Bar (< 768px) */}
+        <MobileBottomNav />
       </div>
-    </div>
+    </SidebarProvider>
   )
 }

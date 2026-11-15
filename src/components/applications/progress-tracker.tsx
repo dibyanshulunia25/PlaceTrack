@@ -65,7 +65,7 @@ export function ProgressTracker({ status }: ProgressTrackerProps) {
               nodeColor = "bg-muted-foreground border-2 border-muted-foreground text-background"
               icon = <Minus className="size-3" strokeWidth={3} />
             } else {
-              nodeColor = "bg-primary border-2 border-primary text-primary-foreground shadow-[0_0_10px_rgba(0,198,255,0.5)]"
+              nodeColor = "bg-primary border-2 border-primary text-primary-foreground shadow-[0_0_10px_rgba(27,107,80,0.35)] dark:shadow-[0_0_10px_rgba(42,157,143,0.4)]"
               icon = <div className="size-1.5 bg-white rounded-full" />
             }
           } else {

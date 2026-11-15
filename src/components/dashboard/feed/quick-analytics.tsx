@@ -18,26 +18,22 @@ export function QuickAnalytics({
         title="Applications"
         value={applications}
         icon={FileText}
-        className="shadow-sm border-border/50 bg-white/40 dark:bg-white/5 backdrop-blur-xl"
       />
       <MetricCard
         title="Assessments"
         value={assessments}
         icon={MonitorPlay}
-        className="shadow-sm border-border/50 bg-white/40 dark:bg-white/5 backdrop-blur-xl"
       />
       <MetricCard
         title="Interviews"
         value={interviews}
         icon={Users}
-        className="shadow-sm border-border/50 bg-white/40 dark:bg-white/5 backdrop-blur-xl"
       />
       <MetricCard
         title="Offers"
         value={offers}
         icon={Award}
         highlight={offers > 0}
-        className="shadow-sm border-border/50 bg-white/40 dark:bg-white/5 backdrop-blur-xl"
       />
     </div>
   )

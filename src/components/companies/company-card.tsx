@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Building2, BookOpen, HelpCircle, FileText, TrendingUp } from "lucide-react"
+import { Building2, BookOpen, HelpCircle, FileText, ArrowRight, Star } from "lucide-react"
 
 interface CompanyCardProps {
   company: {
@@ -15,61 +15,80 @@ interface CompanyCardProps {
 }
 
 export function CompanyCard({ company }: CompanyCardProps) {
+  const formattedDifficulty = company.avgDifficulty > 0 ? company.avgDifficulty.toFixed(1) : "N/A"
+
   return (
-    <Link href={`/dashboard/experiences/${encodeURIComponent(company.name)}`}>
-      <div className="group flex flex-col h-full p-6 space-y-6 border border-white/20 dark:border-white/10 rounded-2xl bg-white/10 dark:bg-black/10 backdrop-blur-xl shadow-clay-sm hover:shadow-clay-md transition-all duration-300 hover:-translate-y-1">
+    <Link href={`/dashboard/experiences/${encodeURIComponent(company.name)}`} className="block h-full group">
+      <div className="flex flex-col justify-between h-full p-5 sm:p-6 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-[var(--shadow-elevation-card)] hover:border-primary/40 transition-all duration-150">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <div className="size-16 rounded-xl bg-white/50 dark:bg-black/50 backdrop-blur-md shadow-clay-inset flex items-center justify-center border border-white/20 overflow-hidden shrink-0">
-            {company.logo ? (
-              <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
-            ) : (
-              <Building2 className="size-8 text-primary/70" />
+        <div>
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="size-12 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] flex items-center justify-center overflow-hidden shrink-0 group-hover:border-primary/40 transition-colors">
+                {company.logo ? (
+                  <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="font-extrabold text-base text-foreground">
+                    {company.name.charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                  {company.name}
+                </h3>
+                <p className="text-xs text-muted-foreground truncate">
+                  {company.industry || "Technology & Engineering"}
+                </p>
+              </div>
+            </div>
+
+            {company.avgDifficulty > 0 && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-[var(--accent-copper)]/10 text-[var(--accent-copper)] border border-[var(--accent-copper)]/20 shrink-0 inline-flex items-center gap-1">
+                <Star className="size-3 fill-[var(--accent-copper)]" />
+                {formattedDifficulty} / 5
+              </span>
             )}
-          </div>
-          <div>
-            <h3 className="text-xl font-bold group-hover:text-primary transition-colors line-clamp-1">
-              {company.name}
-            </h3>
-            <p className="text-sm text-muted-foreground line-clamp-1">
-              {company.industry || "Software & Technology"}
-            </p>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3 mt-auto">
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-white/20 dark:bg-white/5 border border-white/10 shadow-sm">
-            <BookOpen className="size-4 text-blue-500 shrink-0" />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">Experiences</span>
-              <span className="font-semibold">{company.totalExperiences}</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-white/20 dark:bg-white/5 border border-white/10 shadow-sm">
-            <HelpCircle className="size-4 text-purple-500 shrink-0" />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">Questions</span>
-              <span className="font-semibold">{company.totalQuestions}</span>
-            </div>
+        <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[var(--border-subtle)]">
+          <div className="p-2.5 rounded-xl bg-[var(--bg-elevated)]/60 border border-[var(--border-subtle)] text-center">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+              Experiences
+            </span>
+            <span className="text-sm font-black text-foreground mt-0.5 block">
+              {company.totalExperiences}
+            </span>
           </div>
 
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-white/20 dark:bg-white/5 border border-white/10 shadow-sm">
-            <FileText className="size-4 text-emerald-500 shrink-0" />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">Applications</span>
-              <span className="font-semibold">{company.totalApplications}</span>
-            </div>
+          <div className="p-2.5 rounded-xl bg-[var(--bg-elevated)]/60 border border-[var(--border-subtle)] text-center">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+              Questions
+            </span>
+            <span className="text-sm font-black text-foreground mt-0.5 block">
+              {company.totalQuestions}
+            </span>
           </div>
 
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-white/20 dark:bg-white/5 border border-white/10 shadow-sm">
-            <TrendingUp className="size-4 text-orange-500 shrink-0" />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">Avg Difficulty</span>
-              <span className="font-semibold">{company.avgDifficulty}/5</span>
-            </div>
+          <div className="p-2.5 rounded-xl bg-[var(--bg-elevated)]/60 border border-[var(--border-subtle)] text-center">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+              Applicants
+            </span>
+            <span className="text-sm font-black text-foreground mt-0.5 block">
+              {company.totalApplications}
+            </span>
           </div>
+        </div>
+
+        {/* Action Link */}
+        <div className="mt-4 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-muted-foreground">
+          <span>Hiring Archive</span>
+          <span className="font-semibold text-primary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+            <span>Explore Rounds</span>
+            <ArrowRight className="size-3" />
+          </span>
         </div>
       </div>
     </Link>
